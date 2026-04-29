@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kegiatan;
 use App\Models\User;
-use App\Models\Materi;
-use App\Models\Dokumentasi;
-use App\Models\Dokumen;
+use App\Models\KegiatanMateri;
+use App\Models\KegiatanDokumentasi;
+use App\Models\KegiatanDokumen;
 
 class KegiatanController extends Controller
 {
@@ -18,7 +18,8 @@ class KegiatanController extends Controller
 
     public function index()
     {
-        $kegiatan = Kegiatan::latest()->get();
+        ## ini sebelum gue ubah $kegiatan = Kegiatan::latest()->get();
+        $kegiatan = Kegiatan::latest()->paginate(10);;
         return view('admin.kegiatan.index', compact('kegiatan'));
     }
 
@@ -73,15 +74,17 @@ class KegiatanController extends Controller
 
     public function peserta(Kegiatan $kegiatan)
     {
-        $users = User::where('role','peserta')->get();
+        $users = User::where('role','user')->get();
 
         return view('admin.kegiatan.peserta', compact('kegiatan','users'));
     }
 
     public function addPeserta(Request $request, Kegiatan $kegiatan)
     {
-        $kegiatan->peserta()->attach($request->user_id);
-
+        ## ini kode sebelum gue ubah $kegiatan->peserta()->attach($request->user_id);
+        $kegiatan->peserta()->attach($request->user_id, [
+            'status_kehadiran' => 'tidak_hadir'
+        ]);
         return back()->with('success','Peserta ditambahkan');
     }
 
@@ -95,30 +98,52 @@ class KegiatanController extends Controller
     public function updateKehadiran(Request $request, Kegiatan $kegiatan, User $user)
     {
         $kegiatan->peserta()->updateExistingPivot($user->id, [
-            'kehadiran' => $request->kehadiran
+            # ini sebelum gue ubahh'kehadiran' => $request->kehadiran
+            'status_kehadiran' => $request->kehadiran
         ]);
 
         return back()->with('success','Kehadiran diperbarui');
     }
 
+    #fitur absen 
+    public function absen(Kegiatan $kegiatan)
+    {
+        $user = auth()->user();
+    
+        $kegiatan->peserta()->updateExistingPivot($user->id, [
+            'status_kehadiran' => 'hadir'
+        ]);
+    
+        return back()->with('success', 'Berhasil absen');
+    }
     /* =======================
         NARASUMBER
     ======================= */
 
     public function narasumberList(Kegiatan $kegiatan)
     {
-        $users = User::where('role','narasumber')->get();
+        $users = User::where('role','user')->get(); // FIX
+        $assigned = $kegiatan->narasumber;
 
-        return view('admin.kegiatan.narasumber', compact('kegiatan','users'));
+        return view('admin.kegiatan.narasumber', compact('kegiatan','users','assigned'));
     }
 
     public function addNarasumber(Request $request, Kegiatan $kegiatan)
     {
-        $kegiatan->narasumber()->attach($request->user_id);
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
 
-        return back()->with('success','Narasumber ditambahkan');
+        // biar ga duplicate
+        $kegiatan->narasumber()->syncWithoutDetaching([
+            $request->user_id => [
+                'topik_materi' => $request->topik_materi
+            ]
+        ]);
+
+        return back()->with('success','Narasumber berhasil ditambahkan');
     }
-
+    
     public function removeNarasumber(Kegiatan $kegiatan, User $user)
     {
         $kegiatan->narasumber()->detach($user->id);
@@ -141,12 +166,17 @@ class KegiatanController extends Controller
 
         $path = $file->store('materi','public');
 
-        Materi::create([
+        KegiatanMateri::create([
             'kegiatan_id' => $kegiatan->id,
-            'nama' => $file->getClientOriginalName(),
-            'file' => $path
+            'uploaded_by' => auth()->id(),
+            'judul' => $file->getClientOriginalName(),
+            'file_path' => $path,
+            'file_type' => $file->getClientOriginalExtension(),
+            'file_size' => $file->getSize(),  
         ]);
-
+        $request->validate([
+            'file' => 'required|file|max:20480'
+        ]);
         return back()->with('success','Materi berhasil upload');
     }
 
@@ -163,19 +193,29 @@ class KegiatanController extends Controller
 
     public function dokumentasiIndex(Kegiatan $kegiatan)
     {
-        return view('admin.kegiatan.dokumentasi', compact('kegiatan'));
+        $users = User::where('role', 'user')->get();
+        return view('admin.kegiatan.dokumen', compact('kegiatan', 'users'));
     }
 
     public function uploadDokumentasi(Request $request, Kegiatan $kegiatan)
     {
-        $path = $request->file('file')->store('dokumentasi','public');
-
-        Dokumentasi::create([
-            'kegiatan_id' => $kegiatan->id,
-            'file' => $path
+        $request->validate([
+            'files.*' => 'required|image|mimes:jpg,jpeg,png|max:2048'
         ]);
-
-        return back()->with('success','Dokumentasi ditambahkan');
+    
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('dokumentasi', 'public');
+    
+                KegiatanDokumentasi::create([
+                    'kegiatan_id' => $kegiatan->id,
+                    'file_path' => $path,
+                    'caption' => $request->caption
+                ]);
+            }
+        }
+    
+        return back()->with('success','Dokumentasi berhasil ditambahkan');
     }
 
     public function deleteDokumentasi(Kegiatan $kegiatan, Dokumentasi $dokumentasi)
@@ -191,25 +231,28 @@ class KegiatanController extends Controller
 
     public function dokumenIndex(Kegiatan $kegiatan)
     {
-        return view('admin.kegiatan.dokumen', compact('kegiatan'));
+        $users = User::all();
+        return view('admin.kegiatan.dokumen', compact('kegiatan', 'users'));
     }
 
     public function uploadDokumen(Request $request, Kegiatan $kegiatan)
     {
-        $path = $request->file('file')->store('dokumen','public');
-
-        Dokumen::create([
-            'kegiatan_id' => $kegiatan->id,
-            'file' => $path
+        $request->validate([
+            'file' => 'required|file|max:2048',
+            'judul' => 'required',
+            'target_user_id' => 'required'
         ]);
-
-        return back()->with('success','Dokumen diupload');
-    }
-
-    public function deleteDokumen(Kegiatan $kegiatan, Dokumen $dokumen)
-    {
-        $dokumen->delete();
-
-        return back()->with('success','Dokumen dihapus');
+    
+        $path = $request->file('file')->store('dokumen', 'public');
+    
+        KegiatanDokumen::create([
+            'kegiatan_id' => $kegiatan->id,
+            'judul' => $request->judul,
+            'jenis' => $request->jenis,
+            'file_path' => $path,
+            'target_user_id' => $request->target_user_id, 
+        ]);
+    
+        return back()->with('success', 'Surat tugas terkirim');
     }
 }

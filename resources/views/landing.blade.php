@@ -11,7 +11,33 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-slate-950 text-white">
+@if(isset($detailKegiatan))
 
+    <div class="min-h-screen p-10 text-white">
+        <a href="{{ route('landing') }}" class="text-emerald-400 mb-6 inline-block">
+            ← Kembali
+        </a>
+
+        <h1 class="text-3xl font-bold mb-4">
+            {{ $detailKegiatan->nama_kegiatan }}
+        </h1>
+
+        <p class="text-slate-400 mb-6">
+            {{ $detailKegiatan->deskripsi }}
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            @foreach($detailKegiatan->dokumentasi as $dok)
+                <img 
+                    src="{{ asset('storage/' . $dok->file_path) }}"
+                    class="rounded-lg"
+                >
+            @endforeach
+        </div>
+    </div>
+
+    @return
+@endif
     <!-- Navbar -->
     <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/5" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -145,32 +171,48 @@
             @endif
         </div>
     </section>
-
-    <!-- Dokumentasi -->
+<!-- Dokumentasi -->
     <section id="dokumentasi" class="py-24 relative bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <span class="inline-block px-4 py-1.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 text-sm mb-4">Galeri</span>
                 <h2 class="text-3xl sm:text-4xl font-bold">Dokumentasi <span class="text-teal-400">Kegiatan</span></h2>
-                <p class="text-slate-400 mt-3 max-w-xl mx-auto">Momen-momen penting dari kegiatan yang telah dilaksanakan</p>
+                <p class="text-slate-400 mt-3 max-w-xl mx-auto">
+                    Momen-momen penting dari kegiatan yang telah dilaksanakan
+                </p>
             </div>
 
-            @if($dokumentasi->count() > 0)
+            @if($kegiatanTerbaru->count() > 0)
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                @foreach($dokumentasi as $dok)
-                <div class="group relative aspect-square rounded-xl overflow-hidden cursor-pointer">
-                    <img src="{{ asset('storage/' . $dok->file_path) }}" alt="{{ $dok->caption ?? 'Dokumentasi' }}"
-                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-sm font-medium">{{ $dok->caption ?? 'Dokumentasi Kegiatan' }}</p>
-                            @if($dok->kegiatan)
-                            <p class="text-slate-300 text-xs mt-1">{{ $dok->kegiatan->nama_kegiatan }}</p>
-                            @endif
+
+                @foreach($kegiatanTerbaru as $item)
+                    @if($item->dokumentasi->isNotEmpty())
+
+                    <a href="{{ route('kegiatan.show.public', $item->id) }}">
+                        <div class="group relative aspect-square rounded-xl overflow-hidden cursor-pointer">
+
+                            <!-- FOTO COVER (CUMA 1) -->
+                            <img 
+                                src="{{ asset('storage/' . $item->dokumentasi->first()->file_path) }}"
+                                alt="Dokumentasi {{ $item->nama_kegiatan }}"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            >
+
+                            <!-- OVERLAY -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent">
+                                <div class="absolute bottom-0 left-0 right-0 p-4">
+                                    <p class="text-white text-sm font-medium">
+                                        {{ $item->nama_kegiatan }}
+                                    </p>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
-                </div>
+                    </a>
+
+                    @endif
                 @endforeach
+
             </div>
             @else
             <div class="text-center py-16">
@@ -178,6 +220,7 @@
                 <p class="text-slate-500">Belum ada dokumentasi kegiatan</p>
             </div>
             @endif
+
         </div>
     </section>
 

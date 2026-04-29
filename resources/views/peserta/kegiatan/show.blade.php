@@ -3,7 +3,12 @@
 @section('page-title', 'Detail Kegiatan')
 
 @section('content')
+@php
+    $peserta = $kegiatan->peserta->where('id', auth()->id())->first();
+    $status = $peserta?->pivot->status_kehadiran;
+@endphp
 <div class="max-w-4xl mx-auto space-y-6">
+    
     <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
         <div class="flex items-center gap-2 mb-3">
             <span class="px-3 py-1 rounded-full text-xs font-medium {{ $kegiatan->jenis_badge }}">{{ ucfirst($kegiatan->jenis) }}</span>
@@ -23,7 +28,27 @@
             </div>
         </div>
     </div>
+    <!-- ABSENSI -->
+    @if($status !== 'hadir')
+    <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
+        <h3 class="font-semibold text-slate-800 mb-3">
+            <i class="fas fa-user-check text-emerald-500 mr-2"></i>Absensi
+        </h3>
 
+        <form action="{{ route('peserta.kegiatan.absen', $kegiatan->id) }}" method="POST">
+            @csrf
+            <button type="submit" 
+                class="px-4 py-2 rounded-xl bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition">
+                Absen Sekarang
+            </button>
+        </form>
+    </div>
+    @else
+    <div class="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700">
+        <i class="fas fa-check-circle mr-2"></i>
+        Kamu sudah absen
+    </div>
+    @endif
     <!-- Narasumber -->
     @if($kegiatan->narasumber->count() > 0)
     <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
@@ -46,7 +71,7 @@
         <div class="p-3 rounded-xl bg-slate-50 flex items-center justify-between mb-2">
             <div class="flex items-center gap-3">
                 <i class="fas fa-file-{{ $m->file_type === 'pdf' ? 'pdf text-red-500' : 'lines text-blue-500' }}"></i>
-                <div><p class="text-sm font-medium text-slate-700">{{ $m->judul }}</p><p class="text-xs text-slate-400">{{ strtoupper($m->file_type) }} · {{ $m->file_size_formatted }}</p></div>
+                <div><p class="text-sm font-medium text-slate-700">{{ $m->judul }}</p><p class="text-xs text-slate-400">{{ strtoupper($m->file_type) }} · {{ round($m->file_size / 1024, 2) }} KB</p></div>
             </div>
             <a href="{{ route('peserta.materi.download', $m) }}" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-medium hover:bg-blue-100"><i class="fas fa-download mr-1"></i>Download</a>
         </div>

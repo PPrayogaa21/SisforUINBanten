@@ -58,7 +58,7 @@ class Kegiatan extends Model
 
     public function dokumentasi()
     {
-        return $this->hasMany(KegiatanDokumentasi::class, 'kegiatan_id');
+        return $this->hasMany(\App\Models\KegiatanDokumentasi::class);
     }
 
     public function dokumen()

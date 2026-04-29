@@ -17,6 +17,7 @@ use App\Http\Controllers\Narasumber\KegiatanController as NarasumberKegiatanCont
 
 // ===== PUBLIC =====
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/kegiatan/{kegiatan}', [LandingController::class, 'show'])->name('kegiatan.show.public');
 
 // ===== AUTH (GUEST ONLY) =====
 Route::middleware('guest')->group(function () {
@@ -86,6 +87,8 @@ Route::middleware(['auth', 'check.biodata', 'check.role:peserta'])->prefix('pese
     Route::get('/dashboard', [PesertaDashboardController::class, 'index'])->name('dashboard');
     Route::get('/kegiatan', [PesertaKegiatanController::class, 'index'])->name('kegiatan.index');
     Route::get('/kegiatan/{kegiatan}', [PesertaKegiatanController::class, 'show'])->name('kegiatan.show');
+    #route absenn yg di tambahin
+    Route::post('/kegiatan/{kegiatan}/absen', [PesertaKegiatanController::class, 'absen'])->name('kegiatan.absen');
     Route::get('/materi/{materi}/download', [PesertaKegiatanController::class, 'downloadMateri'])->name('materi.download');
     Route::get('/kegiatan/{kegiatan}/kuesioner/{kuesioner}', [PesertaKuesionerController::class, 'fill'])->name('kuesioner.fill');
     Route::post('/kegiatan/{kegiatan}/kuesioner/{kuesioner}', [PesertaKuesionerController::class, 'submit'])->name('kuesioner.submit');

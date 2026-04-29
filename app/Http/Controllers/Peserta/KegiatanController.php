@@ -32,8 +32,32 @@ class KegiatanController extends Controller
         return view('peserta.kegiatan.show', compact('kegiatan'));
     }
 
-    public function downloadMateri(KegiatanMateri $materi)
+    public function downloadMateri($id)
     {
-        return Storage::disk('public')->download($materi->file_path, $materi->judul . '.' . $materi->file_type);
+        $materi = \App\Models\KegiatanMateri::findOrFail($id);
+    
+        return response()->download(
+            storage_path('app/public/' . $materi->file_path)
+        );
     }
+    
+    ##fungsi absennnn baruuu
+    public function absen(Kegiatan $kegiatan)
+    {
+        $user = auth()->user();
+    
+        // Cek apakah user peserta kegiatan ini
+        if (!$kegiatan->peserta()->where('user_id', $user->id)->exists()) {
+            abort(403, 'Kamu bukan peserta kegiatan ini');
+        }
+    
+        // Update status kehadiran
+        $kegiatan->peserta()->updateExistingPivot($user->id, [
+            'status_kehadiran' => 'hadir'
+        ]);
+    
+        return back()->with('success', 'Berhasil absen');
+    }
+
+
 }

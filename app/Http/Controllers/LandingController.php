@@ -10,10 +10,7 @@ class LandingController extends Controller
 {
     public function index()
     {
-        $kegiatanTerbaru = Kegiatan::where('status', '!=', 'draft')
-            ->orderBy('waktu_mulai', 'desc')
-            ->take(6)
-            ->get();
+        $kegiatanTerbaru = Kegiatan::with('dokumentasi')->latest()->get();
 
         $kegiatanBerlangsung = Kegiatan::where('status', 'ongoing')
             ->orderBy('waktu_mulai', 'asc')
@@ -57,5 +54,11 @@ class LandingController extends Controller
             'totalKegiatanSelesai',
             'locations' 
         ));
+    }
+    public function show(Kegiatan $kegiatan)
+    {
+        $kegiatan->load('dokumentasi');
+    
+        return view('show', compact('kegiatan'));
     }
 }

@@ -22,8 +22,15 @@
                 <option value="undangan">Undangan</option>
                 <option value="lainnya">Lainnya</option>
             </select>
+            <select name="target_user_id" required>
+                <option value="">Pilih Narsum</option>
+                @foreach($users as $user)
+                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                @endforeach
+            </select>
             <input type="file" name="file" required accept=".pdf,.doc,.docx" class="text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-50 file:text-red-600 file:font-medium">
             <button type="submit" class="px-5 py-2.5 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600">Upload</button>
+            
         </form>
     </div>
 
