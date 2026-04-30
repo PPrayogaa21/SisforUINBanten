@@ -2,6 +2,13 @@
 @section('title', $kegiatan->nama_kegiatan)
 @section('page-title', 'Detail Kegiatan')
 
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    #map { height: 300px; border-radius: 0.75rem; z-index: 10; }
+</style>
+@endpush
+
 @section('content')
 @php
     $peserta = $kegiatan->peserta->where('id', auth()->id())->first();
@@ -27,6 +34,16 @@
                 <div><p class="text-xs text-slate-400">Tempat</p><p class="text-sm font-medium text-slate-700">{{ $kegiatan->tempat }}</p></div>
             </div>
         </div>
+        
+        <!-- Peta Lokasi -->
+        @if($kegiatan->latitude && $kegiatan->longitude)
+        <div class="mt-4 border border-slate-200 rounded-xl p-1 bg-white">
+            <div id="map"></div>
+        </div>
+        @if($kegiatan->alamat_lengkap)
+        <p class="text-sm text-slate-500 mt-2"><i class="fas fa-map-pin text-emerald-500 mr-1"></i> {{ $kegiatan->alamat_lengkap }}</p>
+        @endif
+        @endif
     </div>
     <!-- ABSENSI -->
     @if($status !== 'hadir')
@@ -87,18 +104,22 @@
         @foreach($kegiatan->dokumen as $doc)
         <div class="p-3 rounded-xl bg-slate-50 flex items-center justify-between mb-2">
             <div><p class="text-sm font-medium text-slate-700">{{ $doc->judul }}</p><p class="text-xs text-slate-400">{{ ucfirst(str_replace('_', ' ', $doc->jenis)) }}</p></div>
-            <a href="{{ asset('storage/' . $doc->file_path) }}" target="_blank" class="text-blue-500 hover:text-blue-700"><i class="fas fa-external-link"></i></a>
+            <a href="{{ route('peserta.dokumen.download', [$kegiatan, $doc]) }}" class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></a>
         </div>
         @endforeach
     </div>
     @endif
 
     <!-- Kuesioner -->
-    @if($kegiatan->status === 'completed' && $kegiatan->kuesioner->count() > 0)
+    @php
+        $kuesionerAktif = $kegiatan->kuesioner->filter(fn($q) => $q->is_active);
+        $tampilKuesioner = in_array($kegiatan->status, ['completed', 'ongoing', 'published']) && $kuesionerAktif->count() > 0;
+    @endphp
+    @if($tampilKuesioner)
     <div class="p-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg">
         <h3 class="font-semibold mb-2"><i class="fas fa-clipboard-list mr-2"></i>Kuesioner Evaluasi</h3>
         <p class="text-emerald-100 text-sm mb-4">Berikan penilaian Anda terhadap kegiatan ini</p>
-        @foreach($kegiatan->kuesioner as $q)
+        @foreach($kuesionerAktif as $q)
             @php $filled = $q->responses()->where('user_id', auth()->id())->exists(); @endphp
             @if($filled)
                 <p class="text-sm text-emerald-200"><i class="fas fa-check-circle mr-1"></i>Anda sudah mengisi kuesioner "{{ $q->judul }}"</p>
@@ -109,4 +130,27 @@
     </div>
     @endif
 </div>
+
+@if($kegiatan->latitude && $kegiatan->longitude)
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lat = {{ $kegiatan->latitude }};
+        const lng = {{ $kegiatan->longitude }};
+        const map = L.map('map').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        L.marker([lat, lng]).addTo(map)
+            .bindPopup("<b>{{ $kegiatan->nama_kegiatan }}</b><br>{{ $kegiatan->tempat }}")
+            .openPopup();
+    });
+</script>
+@endpush
+@endif
+
 @endsection

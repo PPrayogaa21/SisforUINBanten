@@ -33,7 +33,7 @@ class BiodataController extends Controller
         $validated = $request->validate([
             'nama_lengkap' => 'required|string|max:255',
             'jabatan' => 'nullable|string|max:255',
-            'unit_kerja' => 'nullable|string|max:255',
+            'bagian' => 'nullable|string|max:255',
             'pangkat_golongan' => 'nullable|string|max:255',
             'no_hp' => 'nullable|string|max:20',
             'alamat' => 'nullable|string',
@@ -49,7 +49,7 @@ class BiodataController extends Controller
         Biodata::updateOrCreate(
             ['user_id' => $user->id],
             array_merge($validated, [
-                'nip' => $user->nip,
+                'nip' => $user->username,
                 'from_api' => false,
             ])
         );

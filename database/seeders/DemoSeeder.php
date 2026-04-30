@@ -18,22 +18,28 @@ class DemoSeeder extends Seeder
         // Create demo users
         $users = [];
         $demoData = [
-            ['nip' => '198501012010011001', 'name' => 'Dr. Ahmad Fauzi, M.Kom.', 'email' => 'ahmad.fauzi@sitsfor.ac.id', 'jabatan' => 'Dosen', 'unit_kerja' => 'Fakultas Sains dan Teknologi'],
-            ['nip' => '199001012015012001', 'name' => 'Siti Nurhaliza, S.Pd., M.Pd.', 'email' => 'siti.nurhaliza@sitsfor.ac.id', 'jabatan' => 'Dosen', 'unit_kerja' => 'Fakultas Tarbiyah dan Keguruan'],
-            ['nip' => '197505152003121003', 'name' => 'Prof. Dr. H. Budi Santoso', 'email' => 'budi.santoso@sitsfor.ac.id', 'jabatan' => 'Guru Besar', 'unit_kerja' => 'Fakultas Ushuluddin'],
-            ['nip' => '199203052020011001', 'name' => 'Rizki Pratama, S.Kom., M.T.', 'email' => 'rizki.pratama@sitsfor.ac.id', 'jabatan' => 'Dosen', 'unit_kerja' => 'Fakultas Sains dan Teknologi'],
-            ['nip' => '198812102018012001', 'name' => 'Dewi Anggraini, S.E., M.M.', 'email' => 'dewi.anggraini@sitsfor.ac.id', 'jabatan' => 'Staf', 'unit_kerja' => 'Fakultas Ekonomi dan Bisnis Islam'],
+            ['username' => '596', 'name' => 'Dr. Achmad Maftuh Sujana, M.Ag', 'email' => 'achmad.maftuh@sitsfor.ac.id', 'jabatan' => 'Lektor pada Sekretaris pada Jurusan/Program Studi Aqidah dan Filsafat Islam', 'unit_kerja' => 'Jurusan/Program Studi Aqidah dan Filsafat Islam pada Fakultas Ushuluddin', 'nip' => '197205042005011004'],
+            ['username' => '412', 'name' => 'Dr. Apud S.Ag., M.Pd.', 'email' => 'apud@sitsfor.ac.id', 'jabatan' => 'Lektor Kepala pada Ketua pada Jurusan/Program Studi S3 dan S2 Manajemen', 'unit_kerja' => 'Jurusan/Program Studi S3 dan S2 Manajemen Pendidikan Islam pada Pascasarjana', 'nip' => '197101172003121002'],
+            ['username' => '577', 'name' => 'Roza Puspita, M.Sc', 'email' => 'roza.puspita@sitsfor.ac.id', 'jabatan' => 'Lektor pada Ketua pada Jurusan / Program Studi Kimia pada Fakultas Sains', 'unit_kerja' => 'Jurusan / Program Studi Kimia pada Fakultas Sains', 'nip' => '199012172018012002'],
+            ['username' => '363', 'name' => 'Irfan Abas', 'email' => 'irfan.abas@sitsfor.ac.id', 'jabatan' => 'Pranata Laboratorium Pendidikan Ahli Pertama / Tendik PPPK pada Bagian Tata Usaha', 'unit_kerja' => 'Bagian Tata Usaha pada Fakultas Tarbiyah dan Keguruan', 'nip' => '198601032023211015'],
+            ['username' => '598', 'name' => 'Fitri Raya, M.EK', 'email' => 'fitri.raya@sitsfor.ac.id', 'jabatan' => 'Lektor pada Ketua pada Jurusan/Program Studi Asuransi Syariah', 'unit_kerja' => 'Jurusan/Program Studi Asuransi Syariah pada Fakultas Ekonomi dan Bisnis', 'nip' => '198808102019032010'],
+            ['username' => '268', 'name' => 'Prof. Dr. H.E. Syibli Syarjaya LML., MM', 'email' => 'syibli.syarjaya@sitsfor.ac.id', 'jabatan' => 'Guru Besar pada Kelompok Dosen pada Jurusan/Program Studi Hukum Keluarga', 'unit_kerja' => 'Jurusan/Program Studi Hukum Keluarga pada Fakultas Syariah', 'nip' => '195007051983031001'],
         ];
 
         foreach ($demoData as $data) {
             $user = User::create([
-                'nip' => $data['nip'],
-                'name' => $data['name'],
+                'username' => $data['username'],
+                'nama' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make('password'),
                 'role' => 'user',
                 'biodata_verified' => true,
                 'email_verified_at' => now(),
+                'status' => 1,
+                'ket' => 'USER',
+                'hak_akses' => 2,
+                'adalah' => 'SIMPEG | SISTEM PEGAWAI',
+                'tglreg' => '2019-10-31',
             ]);
 
             Biodata::create([
@@ -41,7 +47,7 @@ class DemoSeeder extends Seeder
                 'nip' => $data['nip'],
                 'nama_lengkap' => $data['name'],
                 'jabatan' => $data['jabatan'],
-                'unit_kerja' => $data['unit_kerja'],
+                'bagian' => $data['unit_kerja'],
                 'pangkat_golongan' => 'III/c',
                 'no_hp' => '08' . rand(1000000000, 9999999999),
                 'from_api' => true,

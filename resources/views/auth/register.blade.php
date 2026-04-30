@@ -9,12 +9,12 @@
     @csrf
 
     <div>
-        <label class="block text-sm font-medium text-slate-300 mb-1.5">NIP</label>
+        <label class="block text-sm font-medium text-slate-300 mb-1.5">Username / NIP</label>
         <div class="relative">
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-id-card"></i></span>
-            <input type="text" name="nip" value="{{ old('nip') }}" required
+            <input type="text" name="username" value="{{ old('username') }}" required
                 class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all"
-                placeholder="Nomor Induk Pegawai">
+                placeholder="Username / NIP">
         </div>
     </div>
 
@@ -22,7 +22,7 @@
         <label class="block text-sm font-medium text-slate-300 mb-1.5">Nama Lengkap</label>
         <div class="relative">
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-user"></i></span>
-            <input type="text" name="name" value="{{ old('name') }}" required
+            <input type="text" name="nama" value="{{ old('nama') }}" required
                 class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all"
                 placeholder="Nama lengkap Anda">
         </div>

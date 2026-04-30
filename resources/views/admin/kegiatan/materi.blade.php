@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="flex gap-1">
-                <a href="{{ asset('storage/' . $m->file_path) }}" target="_blank" class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50"><i class="fas fa-download"></i></a>
+                <a href="{{ Storage::disk('public')->url($m->file_path) }}" target="_blank" class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50"><i class="fas fa-download"></i></a>
                 <form method="POST" action="{{ route('admin.kegiatan.materi.delete', [$kegiatan, $m]) }}" onsubmit="return confirm('Hapus materi ini?')">
                     @csrf @method('DELETE')
                     <button class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50"><i class="fas fa-trash"></i></button>

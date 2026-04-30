@@ -52,6 +52,11 @@
                 <span>Kelola Kegiatan</span>
             </a>
 
+            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('admin.users.*') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+                <i class="fas fa-users-gear w-5 text-center"></i>
+                <span>Manajemen User</span>
+            </a>
+
         @else
             @if($currentRole === 'peserta')
                 <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Menu Peserta</p>

@@ -22,4 +22,14 @@ class KegiatanDokumen extends Model
     {
         return $this->belongsTo(Kegiatan::class);
     }
+
+    public function targetUser()
+    {
+        return $this->belongsTo(User::class, 'target_user_id');
+    }
+
+    public function uploader()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

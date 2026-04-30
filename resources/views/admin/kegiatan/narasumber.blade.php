@@ -12,17 +12,20 @@
         <a href="{{ route('admin.kegiatan.show', $kegiatan) }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">← Kembali</a>
     </div>
 
-    <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
+    <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm overflow-visible">
         <h3 class="font-semibold text-slate-800 mb-4"><i class="fas fa-user-plus text-amber-500 mr-2"></i>Tambah Narasumber</h3>
-        <form method="POST" action="{{ route('admin.kegiatan.narasumber.add', $kegiatan) }}" class="flex flex-col sm:flex-row gap-3">
+        
+        <form method="POST" action="{{ route('admin.kegiatan.narasumber.add', $kegiatan) }}" class="flex flex-col sm:flex-row gap-3 items-start">
             @csrf
-            <select name="user_id" required class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50">
-                <option value="">Pilih pengguna...</option>
-                @foreach($users as $user)
-                <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->nip }})</option>
-                @endforeach
-            </select>
-            <input type="text" name="topik_materi" placeholder="Topik materi (opsional)" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50">
+            <div class="flex-1 w-full">
+                <select name="user_id" id="userSelect" required class="w-full">
+                    <option value="">Pilih pengguna...</option>
+                    @foreach($users as $user)
+                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->nip ?? '-' }})</option>
+                    @endforeach
+                </select>
+            </div>
+            <input type="text" name="topik_materi" placeholder="Topik materi (opsional)" class="flex-1 w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50">
             <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors">Tambah</button>
         </form>
     </div>
@@ -55,4 +58,31 @@
         </table>
     </div>
 </div>
+
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+<style>
+    .ts-control { border-radius: 0.75rem; border-color: #e2e8f0; padding: 0.625rem 1rem; font-size: 0.875rem; box-shadow: none; }
+    .ts-control.focus { border-color: #fbbf24; box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.5); }
+    .ts-dropdown { border-radius: 0.75rem; border-color: #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); margin-top: 4px; }
+    .ts-dropdown .option { padding: 0.5rem 1rem; font-size: 0.875rem; }
+    .ts-dropdown .active { background-color: #fffbeb; color: #b45309; }
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        new TomSelect("#userSelect", {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            },
+            placeholder: "Ketik nama atau NIP untuk mencari..."
+        });
+    });
+</script>
+@endpush
 @endsection

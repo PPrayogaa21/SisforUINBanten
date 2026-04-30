@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\RoleSelectionController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\KuesionerController as AdminKuesionerController;
 use App\Http\Controllers\Peserta\DashboardController as PesertaDashboardController;
@@ -44,6 +45,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
+    // User Management
+    Route::resource('users', AdminUserController::class)->except(['show']);
+
     // Kegiatan CRUD
     Route::resource('kegiatan', AdminKegiatanController::class);
 
@@ -72,6 +76,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/kegiatan/{kegiatan}/dokumen', [AdminKegiatanController::class, 'dokumenIndex'])->name('kegiatan.dokumen');
     Route::post('/kegiatan/{kegiatan}/dokumen', [AdminKegiatanController::class, 'uploadDokumen'])->name('kegiatan.dokumen.upload');
     Route::delete('/kegiatan/{kegiatan}/dokumen/{dokumen}', [AdminKegiatanController::class, 'deleteDokumen'])->name('kegiatan.dokumen.delete');
+    Route::get('/kegiatan/{kegiatan}/dokumen/{dokumen}/download', [AdminKegiatanController::class, 'downloadDokumen'])->name('kegiatan.dokumen.download');
 
     // Kegiatan - Kuesioner
     Route::get('/kegiatan/{kegiatan}/kuesioner', [AdminKuesionerController::class, 'index'])->name('kegiatan.kuesioner');
@@ -90,6 +95,7 @@ Route::middleware(['auth', 'check.biodata', 'check.role:peserta'])->prefix('pese
     #route absenn yg di tambahin
     Route::post('/kegiatan/{kegiatan}/absen', [PesertaKegiatanController::class, 'absen'])->name('kegiatan.absen');
     Route::get('/materi/{materi}/download', [PesertaKegiatanController::class, 'downloadMateri'])->name('materi.download');
+    Route::get('/kegiatan/{kegiatan}/dokumen/{dokumen}/download', [PesertaKegiatanController::class, 'downloadDokumen'])->name('dokumen.download');
     Route::get('/kegiatan/{kegiatan}/kuesioner/{kuesioner}', [PesertaKuesionerController::class, 'fill'])->name('kuesioner.fill');
     Route::post('/kegiatan/{kegiatan}/kuesioner/{kuesioner}', [PesertaKuesionerController::class, 'submit'])->name('kuesioner.submit');
 });

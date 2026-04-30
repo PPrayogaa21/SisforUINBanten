@@ -10,24 +10,55 @@ class LandingController extends Controller
 {
     public function index()
     {
-        $kegiatanTerbaru = Kegiatan::with('dokumentasi')->latest()->get();
+        $kegiatanSemua = Kegiatan::with('dokumentasi', 'peserta', 'narasumber')
+            ->where('status', '!=', 'draft')
+            ->get();
+
+        $kegiatanTerbaru = $kegiatanSemua->sortBy(function ($kegiatan) {
+            $isUpcoming = in_array($kegiatan->status, ['published', 'ongoing']) && $kegiatan->waktu_mulai >= now();
+            if ($isUpcoming) {
+                // Kategori 1: Akan datang (urutkan naik berdasarkan waktu)
+                return '1_' . str_pad($kegiatan->waktu_mulai->timestamp, 15, '0', STR_PAD_LEFT);
+            } else {
+                // Kategori 2: Sudah selesai/lewat (urutkan turun berdasarkan waktu)
+                $descTimestamp = PHP_INT_MAX - $kegiatan->waktu_mulai->timestamp;
+                return '2_' . str_pad($descTimestamp, 15, '0', STR_PAD_LEFT);
+            }
+        })->values();
 
         $kegiatanBerlangsung = Kegiatan::where('status', 'ongoing')
             ->orderBy('waktu_mulai', 'asc')
             ->take(3)
             ->get();
 
-        $dokumentasi = KegiatanDokumentasi::with('kegiatan')
-            ->orderBy('created_at', 'desc')
-            ->take(8)
-            ->get();
 
-        $kegiatanDenganLokasi = Kegiatan::whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->where('status', '!=', 'draft')
-            ->orderBy('waktu_mulai', 'desc')
-            ->take(20)
-            ->get();
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->isAdmin()) {
+                $kegiatanDenganLokasi = Kegiatan::whereNotNull('latitude')
+                    ->whereNotNull('longitude')
+                    ->where('status', '!=', 'draft')
+                    ->orderBy('waktu_mulai', 'desc')
+                    ->take(20)
+                    ->get();
+            } else {
+                $kegiatanDenganLokasi = Kegiatan::whereNotNull('latitude')
+                    ->whereNotNull('longitude')
+                    ->where('status', '!=', 'draft')
+                    ->where(function ($query) use ($user) {
+                        $query->whereHas('peserta', function ($q) use ($user) {
+                            $q->where('users.id', $user->id);
+                        })->orWhereHas('narasumber', function ($q) use ($user) {
+                            $q->where('users.id', $user->id);
+                        });
+                    })
+                    ->orderBy('waktu_mulai', 'desc')
+                    ->take(20)
+                    ->get();
+            }
+        } else {
+            $kegiatanDenganLokasi = collect();
+        }
 
         $totalKegiatan = Kegiatan::where('status', '!=', 'draft')->count();
         $totalKegiatanSelesai = Kegiatan::where('status', 'completed')->count();
@@ -48,7 +79,6 @@ class LandingController extends Controller
         return view('landing', compact(
             'kegiatanTerbaru',
             'kegiatanBerlangsung',
-            'dokumentasi',
             'kegiatanDenganLokasi',
             'totalKegiatan',
             'totalKegiatanSelesai',

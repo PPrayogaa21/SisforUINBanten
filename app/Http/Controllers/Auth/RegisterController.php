@@ -18,24 +18,29 @@ class RegisterController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'nip' => 'required|string|unique:users,nip|min:5',
-            'name' => 'required|string|max:255',
+            'username' => 'required|string|unique:users,username|min:1',
+            'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
         ], [
-            'nip.unique' => 'NIP sudah terdaftar.',
+            'username.unique' => 'Username/NIP sudah terdaftar.',
             'email.unique' => 'Email sudah terdaftar.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'password.min' => 'Password minimal 8 karakter.',
         ]);
 
         $user = User::create([
-            'nip' => $validated['nip'],
-            'name' => $validated['name'],
+            'username' => $validated['username'],
+            'nama' => $validated['nama'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => 'user',
             'biodata_verified' => false,
+            'status' => 1,
+            'ket' => 'USER',
+            'hak_akses' => 2,
+            'adalah' => 'SIMPEG | SISTEM PEGAWAI',
+            'tglreg' => now()->format('Y-m-d'),
         ]);
 
         Auth::login($user);

@@ -36,9 +36,25 @@ class KegiatanController extends Controller
     {
         $materi = \App\Models\KegiatanMateri::findOrFail($id);
     
-        return response()->download(
-            storage_path('app/public/' . $materi->file_path)
-        );
+        if (!Storage::disk('public')->exists($materi->file_path)) {
+            abort(404, 'File materi tidak ditemukan.');
+        }
+
+        return Storage::disk('public')->download($materi->file_path, $materi->judul . '.' . $materi->file_type);
+    }
+    
+    public function downloadDokumen(Kegiatan $kegiatan, \App\Models\KegiatanDokumen $dokumen)
+    {
+        // Pastikan user adalah peserta kegiatan ini
+        if (!$kegiatan->peserta()->where('user_id', auth()->id())->exists()) {
+            abort(403, 'Anda bukan peserta kegiatan ini.');
+        }
+
+        if (!Storage::disk('public')->exists($dokumen->file_path)) {
+            abort(404, 'File dokumen tidak ditemukan.');
+        }
+
+        return Storage::disk('public')->download($dokumen->file_path, $dokumen->judul . '.' . pathinfo($dokumen->file_path, PATHINFO_EXTENSION));
     }
     
     ##fungsi absennnn baruuu

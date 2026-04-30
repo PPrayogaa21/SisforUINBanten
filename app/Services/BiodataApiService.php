@@ -57,7 +57,7 @@ class BiodataApiService
      */
     public function fetchAndStore(User $user): ?Biodata
     {
-        $apiData = $this->checkBiodata($user->nip);
+        $apiData = $this->checkBiodata($user->username);
 
         if (!$apiData) {
             return null;
@@ -66,10 +66,10 @@ class BiodataApiService
         $biodata = Biodata::updateOrCreate(
             ['user_id' => $user->id],
             [
-                'nip' => $user->nip,
-                'nama_lengkap' => $apiData['nama_lengkap'] ?? $apiData['nama'] ?? $user->name,
+                'nip' => $user->username,
+                'nama_lengkap' => $apiData['nama_lengkap'] ?? $apiData['nama'] ?? $user->nama,
                 'jabatan' => $apiData['jabatan'] ?? null,
-                'unit_kerja' => $apiData['unit_kerja'] ?? null,
+                'bagian' => $apiData['bagian'] ?? $apiData['unit_kerja'] ?? null,
                 'pangkat_golongan' => $apiData['pangkat_golongan'] ?? null,
                 'no_hp' => $apiData['no_hp'] ?? null,
                 'alamat' => $apiData['alamat'] ?? null,

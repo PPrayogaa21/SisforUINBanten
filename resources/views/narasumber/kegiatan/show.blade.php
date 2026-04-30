@@ -2,6 +2,13 @@
 @section('title', $kegiatan->nama_kegiatan)
 @section('page-title', 'Detail Kegiatan')
 
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+    #map { height: 300px; border-radius: 0.75rem; z-index: 10; }
+</style>
+@endpush
+
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
     <!-- Info -->
@@ -15,6 +22,16 @@
             <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50"><i class="fas fa-calendar-days text-emerald-500"></i><div><p class="text-xs text-slate-400">Waktu</p><p class="text-sm font-medium text-slate-700">{{ $kegiatan->waktu_mulai->translatedFormat('d M Y, H:i') }}</p></div></div>
             <div class="flex items-center gap-3 p-3 rounded-xl bg-slate-50"><i class="fas fa-location-dot text-blue-500"></i><div><p class="text-xs text-slate-400">Tempat</p><p class="text-sm font-medium text-slate-700">{{ $kegiatan->tempat }}</p></div></div>
         </div>
+
+        <!-- Peta Lokasi -->
+        @if($kegiatan->latitude && $kegiatan->longitude)
+        <div class="mt-4 border border-slate-200 rounded-xl p-1 bg-white">
+            <div id="map"></div>
+        </div>
+        @if($kegiatan->alamat_lengkap)
+        <p class="text-sm text-slate-500 mt-2"><i class="fas fa-map-pin text-emerald-500 mr-1"></i> {{ $kegiatan->alamat_lengkap }}</p>
+        @endif
+        @endif
     </div>
 
     <!-- Upload Materi -->
@@ -34,7 +51,7 @@
                     <i class="fas fa-file-lines text-blue-500"></i>
                     <div><p class="text-sm font-medium text-slate-700">{{ $m->judul }}</p><p class="text-xs text-slate-400">{{ strtoupper($m->file_type) }} · {{ $m->file_size_formatted }} · {{ $m->uploader->name }}</p></div>
                 </div>
-                <a href="{{ asset('storage/' . $m->file_path) }}" target="_blank" class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></a>
+                <a href="{{ Storage::disk('public')->url($m->file_path) }}" target="_blank" class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></a>
             </div>
             @endforeach
         </div>
@@ -55,4 +72,27 @@
         </div>
     </div>
 </div>
+
+@if($kegiatan->latitude && $kegiatan->longitude)
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lat = {{ $kegiatan->latitude }};
+        const lng = {{ $kegiatan->longitude }};
+        const map = L.map('map').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+        L.marker([lat, lng]).addTo(map)
+            .bindPopup("<b>{{ $kegiatan->nama_kegiatan }}</b><br>{{ $kegiatan->tempat }}")
+            .openPopup();
+    });
+</script>
+@endpush
+@endif
+
 @endsection

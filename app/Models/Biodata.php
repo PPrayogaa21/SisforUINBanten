@@ -13,7 +13,7 @@ class Biodata extends Model
         'nip',
         'nama_lengkap',
         'jabatan',
-        'unit_kerja',
+        'bagian',
         'pangkat_golongan',
         'no_hp',
         'alamat',

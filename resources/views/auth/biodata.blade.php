@@ -10,7 +10,7 @@
 
     <div>
         <label class="block text-sm font-medium text-slate-300 mb-1.5">Nama Lengkap <span class="text-red-400">*</span></label>
-        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $biodata->nama_lengkap ?? auth()->user()->name) }}" required
+        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $biodata->nama_lengkap ?? auth()->user()->nama) }}" required
             class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all">
     </div>
 
@@ -22,10 +22,10 @@
                 placeholder="Dosen / Staff">
         </div>
         <div>
-            <label class="block text-sm font-medium text-slate-300 mb-1.5">Unit Kerja</label>
-            <input type="text" name="unit_kerja" value="{{ old('unit_kerja', $biodata->unit_kerja ?? '') }}"
+            <label class="block text-sm font-medium text-slate-300 mb-1.5">Bagian</label>
+            <input type="text" name="bagian" value="{{ old('bagian', $biodata->bagian ?? '') }}"
                 class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all"
-                placeholder="Fakultas / Unit">
+                placeholder="Fakultas / Unit / Jurusan">
         </div>
     </div>
 
