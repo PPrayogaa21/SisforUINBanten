@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id(); // Representing id_user
             $table->string('username')->unique();
             $table->string('password');
+            
+            // SIMPEG Fields
             $table->integer('status')->default(1);
             $table->string('ket')->nullable();
             $table->date('tglreg')->nullable();

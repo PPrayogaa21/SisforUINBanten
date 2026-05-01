@@ -12,10 +12,10 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         $admin = User::create([
-            'username' => '000000000000000001', // Using username instead of nip
+            'username' => 'ADMIN001', // Using username instead of nip
             'nama' => 'Administrator',
             'email' => 'admin@sitsfor.ac.id',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('12345678'),
             'role' => 'admin',
             'biodata_verified' => true,
             'email_verified_at' => now(),

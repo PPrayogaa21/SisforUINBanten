@@ -53,17 +53,18 @@
     <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm overflow-visible">
         <h3 class="font-semibold text-slate-800 mb-4"><i class="fas fa-user-plus text-emerald-500 mr-2"></i>Tambah Peserta</h3>
         
-        <form method="POST" action="{{ route('admin.kegiatan.peserta.add', $kegiatan) }}" class="flex gap-3 items-start">
+        <form method="POST" action="{{ route('admin.kegiatan.peserta.add', $kegiatan) }}" class="flex flex-col sm:flex-row gap-3 items-start">
             @csrf
-            <div class="flex-1">
-                <select name="user_id" id="userSelect" required class="w-full">
+            <div class="flex-1 w-full relative">
+                <input type="text" id="searchUser" placeholder="Ketik nama atau NIP untuk mencari..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 mb-2">
+                <select name="user_id" id="userSelect" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50">
                     <option value="">Pilih pengguna...</option>
                     @foreach($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->nip ?? '-' }})</option>
+                    <option value="{{ $user->id }}">{{ $user->nama ?? $user->name }} ({{ $user->biodata->nip ?? '-' }})</option>
                     @endforeach
                 </select>
             </div>
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors">Tambah</button>
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-medium hover:bg-emerald-600 transition-colors sm:mt-[52px]">Tambah</button>
         </form>
     </div>
 
@@ -87,8 +88,8 @@
                     };
                 @endphp
                 <tr class="hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-4 font-medium text-slate-800">{{ $p->name }}</td>
-                    <td class="px-6 py-4 text-slate-500 font-mono text-xs">{{ $p->nip }}</td>
+                    <td class="px-6 py-4 font-medium text-slate-800">{{ $p->nama ?? $p->name }}</td>
+                    <td class="px-6 py-4 text-slate-500 font-mono text-xs">{{ $p->biodata->nip ?? '-' }}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             {{-- Indikator Badge --}}
@@ -122,29 +123,39 @@
     </div>
 </div>
 
-@push('styles')
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
-<style>
-    .ts-control { border-radius: 0.75rem; border-color: #e2e8f0; padding: 0.625rem 1rem; font-size: 0.875rem; box-shadow: none; }
-    .ts-control.focus { border-color: #34d399; box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.5); }
-    .ts-dropdown { border-radius: 0.75rem; border-color: #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); margin-top: 4px; }
-    .ts-dropdown .option { padding: 0.5rem 1rem; font-size: 0.875rem; }
-    .ts-dropdown .active { background-color: #ecfdf5; color: #065f46; }
-</style>
-@endpush
-
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        new TomSelect("#userSelect", {
-            create: false,
-            sortField: {
-                field: "text",
-                direction: "asc"
-            },
-            placeholder: "Ketik nama atau NIP untuk mencari..."
-        });
+        const searchInput = document.getElementById('searchUser');
+        const userSelect = document.getElementById('userSelect');
+        
+        if (searchInput && userSelect) {
+            searchInput.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+                
+                Array.from(userSelect.options).forEach(option => {
+                    if(option.value === '') return; // Skip placeholder
+                    
+                    const text = option.text.toLowerCase();
+                    if(text.includes(term)) {
+                        option.style.display = '';
+                        option.hidden = false;
+                    } else {
+                        option.style.display = 'none';
+                        option.hidden = true;
+                    }
+                });
+                
+                if(userSelect.selectedOptions[0]?.hidden) {
+                    const firstVisible = Array.from(userSelect.options).find(o => !o.hidden && o.value !== '');
+                    if(firstVisible) {
+                        userSelect.value = firstVisible.value;
+                    } else {
+                        userSelect.value = '';
+                    }
+                }
+            });
+        }
     });
 </script>
 @endpush

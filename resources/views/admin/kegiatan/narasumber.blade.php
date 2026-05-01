@@ -17,16 +17,17 @@
         
         <form method="POST" action="{{ route('admin.kegiatan.narasumber.add', $kegiatan) }}" class="flex flex-col sm:flex-row gap-3 items-start">
             @csrf
-            <div class="flex-1 w-full">
-                <select name="user_id" id="userSelect" required class="w-full">
+            <div class="flex-1 w-full relative">
+                <input type="text" id="searchUser" placeholder="Ketik nama atau NIP untuk mencari..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50 mb-2">
+                <select name="user_id" id="userSelect" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50">
                     <option value="">Pilih pengguna...</option>
                     @foreach($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->nip ?? '-' }})</option>
+                    <option value="{{ $user->id }}">{{ $user->nama ?? $user->name }} ({{ $user->biodata->nip ?? '-' }})</option>
                     @endforeach
                 </select>
             </div>
-            <input type="text" name="topik_materi" placeholder="Topik materi (opsional)" class="flex-1 w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50">
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors">Tambah</button>
+            <input type="text" name="topik_materi" placeholder="Topik materi (opsional)" class="flex-1 w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50 sm:mt-[52px]">
+            <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors sm:mt-[52px]">Tambah</button>
         </form>
     </div>
 
@@ -41,8 +42,8 @@
             <tbody class="divide-y divide-slate-100">
                 @forelse($kegiatan->narasumber as $n)
                 <tr class="hover:bg-slate-50/50">
-                    <td class="px-6 py-4 font-medium text-slate-800">{{ $n->name }}</td>
-                    <td class="px-6 py-4 text-slate-500">{{ $n->nip }}</td>
+                    <td class="px-6 py-4 font-medium text-slate-800">{{ $n->nama ?? $n->name }}</td>
+                    <td class="px-6 py-4 text-slate-500">{{ $n->biodata->nip ?? '-' }}</td>
                     <td class="px-6 py-4 text-slate-500">{{ $n->pivot->topik_materi ?? '-' }}</td>
                     <td class="px-6 py-4 text-right">
                         <form method="POST" action="{{ route('admin.kegiatan.narasumber.remove', [$kegiatan, $n]) }}" onsubmit="return confirm('Hapus narasumber ini?')">
@@ -59,29 +60,39 @@
     </div>
 </div>
 
-@push('styles')
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
-<style>
-    .ts-control { border-radius: 0.75rem; border-color: #e2e8f0; padding: 0.625rem 1rem; font-size: 0.875rem; box-shadow: none; }
-    .ts-control.focus { border-color: #fbbf24; box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.5); }
-    .ts-dropdown { border-radius: 0.75rem; border-color: #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); margin-top: 4px; }
-    .ts-dropdown .option { padding: 0.5rem 1rem; font-size: 0.875rem; }
-    .ts-dropdown .active { background-color: #fffbeb; color: #b45309; }
-</style>
-@endpush
-
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        new TomSelect("#userSelect", {
-            create: false,
-            sortField: {
-                field: "text",
-                direction: "asc"
-            },
-            placeholder: "Ketik nama atau NIP untuk mencari..."
-        });
+        const searchInput = document.getElementById('searchUser');
+        const userSelect = document.getElementById('userSelect');
+        
+        if (searchInput && userSelect) {
+            searchInput.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+                
+                Array.from(userSelect.options).forEach(option => {
+                    if(option.value === '') return; // Skip placeholder
+                    
+                    const text = option.text.toLowerCase();
+                    if(text.includes(term)) {
+                        option.style.display = '';
+                        option.hidden = false;
+                    } else {
+                        option.style.display = 'none';
+                        option.hidden = true;
+                    }
+                });
+                
+                if(userSelect.selectedOptions[0]?.hidden) {
+                    const firstVisible = Array.from(userSelect.options).find(o => !o.hidden && o.value !== '');
+                    if(firstVisible) {
+                        userSelect.value = firstVisible.value;
+                    } else {
+                        userSelect.value = '';
+                    }
+                }
+            });
+        }
     });
 </script>
 @endpush

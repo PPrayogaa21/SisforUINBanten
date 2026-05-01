@@ -79,7 +79,7 @@ class KegiatanController extends Controller
 
     public function peserta(Request $request, Kegiatan $kegiatan)
     {
-        $query = User::where('role', 'user');
+        $query = User::with('biodata')->where('role', 'user');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -96,10 +96,20 @@ class KegiatanController extends Controller
 
     public function addPeserta(Request $request, Kegiatan $kegiatan)
     {
-        ## ini kode sebelum gue ubah $kegiatan->peserta()->attach($request->user_id);
-        $kegiatan->peserta()->attach($request->user_id, [
-            'status_kehadiran' => 'tidak_hadir'
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
         ]);
+
+        if ($kegiatan->peserta()->where('user_id', $request->user_id)->exists()) {
+            return back()->with('warning', 'Peserta sudah terdaftar dalam kegiatan ini!');
+        }
+
+        $kegiatan->peserta()->syncWithoutDetaching([
+            $request->user_id => [
+                'status_kehadiran' => 'tidak_hadir'
+            ]
+        ]);
+        
         return back()->with('success','Peserta ditambahkan');
     }
 
@@ -136,7 +146,7 @@ class KegiatanController extends Controller
 
     public function narasumberList(Request $request, Kegiatan $kegiatan)
     {
-        $query = User::where('role', 'user');
+        $query = User::with('biodata')->where('role', 'user');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -157,6 +167,10 @@ class KegiatanController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id'
         ]);
+
+        if ($kegiatan->narasumber()->where('user_id', $request->user_id)->exists()) {
+            return back()->with('warning', 'Narasumber sudah terdaftar dalam kegiatan ini!');
+        }
 
         // biar ga duplicate
         $kegiatan->narasumber()->syncWithoutDetaching([

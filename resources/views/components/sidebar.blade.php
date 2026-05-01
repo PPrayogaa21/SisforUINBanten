@@ -21,8 +21,12 @@
     <!-- User Info -->
     <div class="px-6 py-4 border-b border-slate-800/50">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-semibold text-sm">
-                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+            <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
+                @if(auth()->user()->biodata && auth()->user()->biodata->foto)
+                    <img src="{{ asset('storage/' . auth()->user()->biodata->foto) }}" alt="Avatar" class="w-full h-full object-cover">
+                @else
+                    {{ strtoupper(substr(auth()->user()->nama ?? auth()->user()->name ?? 'U', 0, 1)) }}
+                @endif
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-white text-sm font-medium truncate">{{ auth()->user()->name ?? 'User' }}</p>
@@ -93,6 +97,7 @@
                 </a>
             </div>
         @endif
+
     </nav>
 
     <!-- Logout -->

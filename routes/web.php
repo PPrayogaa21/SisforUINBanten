@@ -39,6 +39,14 @@ Route::middleware('auth')->group(function () {
     // Role Selection
     Route::get('/select-role', [RoleSelectionController::class, 'show'])->name('select-role');
     Route::post('/select-role', [RoleSelectionController::class, 'select'])->name('select-role.submit');
+
+    // Profile
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+
+    // Password
+    Route::get('/password', [\App\Http\Controllers\ProfileController::class, 'editPassword'])->name('password.edit');
+    Route::put('/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
 });
 
 // ===== ADMIN =====
