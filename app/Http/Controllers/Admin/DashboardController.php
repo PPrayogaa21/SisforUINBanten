@@ -17,11 +17,10 @@ class DashboardController extends Controller
         $totalPengguna = User::where('role', 'user')->count();
         $totalResponKuesioner = KuesionerResponse::count();
 
-        $kegiatanTerbaru = Kegiatan::with('creator')
+        $kegiatanTerbaru = Kegiatan::with(['creator', 'peserta', 'narasumber'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
-
         $kegiatanBulanIni = Kegiatan::whereMonth('waktu_mulai', now()->month)
             ->whereYear('waktu_mulai', now()->year)
             ->count();

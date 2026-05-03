@@ -62,40 +62,31 @@
             </a>
 
         @else
-            @if($currentRole === 'peserta')
-                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Menu Peserta</p>
+            <div class="mt-4">
 
-                <a href="{{ route('peserta.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('peserta.dashboard') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
-                    <i class="fas fa-chart-pie w-5 text-center"></i>
+            <p class="text-xs text-slate-400 px-3 mb-2">Menu</p>
+
+            {{-- DASHBOARD UTAMA --}}
+            <a href="{{ route('dashboard') }}" 
+                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('dashboard') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+                    <i class="fas fa-house w-5 text-center"></i>
                     <span>Dashboard</span>
-                </a>
+            </a>
 
-                <a href="{{ route('peserta.kegiatan.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('peserta.kegiatan.*') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
-                    <i class="fas fa-calendar-check w-5 text-center"></i>
-                    <span>Kegiatan Saya</span>
-                </a>
+            {{-- DASHBOARD PESERTA --}}
+            <a href="{{ route('peserta.dashboard') }}" 
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('peserta.dashboard') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+                <i class="fas fa-user-check w-5 text-center"></i>
+                <span>Dashboard Peserta</span>
+            </a>
 
-            @elseif($currentRole === 'narasumber')
-                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Menu Narasumber</p>
+            {{-- DASHBOARD NARASUMBER --}}
+            <a href="{{ route('narasumber.dashboard') }}" 
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('narasumber.dashboard') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+                <i class="fas fa-chalkboard-user w-5 text-center"></i>
+                <span>Dashboard Narasumber</span>
 
-                <a href="{{ route('narasumber.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('narasumber.dashboard') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
-                    <i class="fas fa-chart-pie w-5 text-center"></i>
-                    <span>Dashboard</span>
-                </a>
 
-                <a href="{{ route('narasumber.kegiatan.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('narasumber.kegiatan.*') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
-                    <i class="fas fa-chalkboard-user w-5 text-center"></i>
-                    <span>Kegiatan Saya</span>
-                </a>
-            @endif
-
-            <div class="pt-4 mt-4 border-t border-slate-800/50">
-                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Lainnya</p>
-                <a href="{{ route('select-role') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all duration-200">
-                    <i class="fas fa-repeat w-5 text-center"></i>
-                    <span>Ganti Role</span>
-                </a>
-            </div>
         @endif
 
     </nav>

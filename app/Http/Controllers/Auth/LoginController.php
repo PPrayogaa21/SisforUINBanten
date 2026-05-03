@@ -51,7 +51,7 @@ class LoginController extends Controller
             }
 
             // Redirect ke pemilihan role
-            return redirect()->route('select-role');
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors([

@@ -61,7 +61,7 @@ class BiodataController extends Controller
                 ->with('success', 'Biodata berhasil disimpan.');
         }
 
-        return redirect()->route('select-role')
-            ->with('success', 'Biodata berhasil disimpan. Silakan pilih role.');
+        return redirect()->route('dashboard');
+            
     }
 }

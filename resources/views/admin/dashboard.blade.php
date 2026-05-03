@@ -89,6 +89,25 @@
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-medium {{ $item->status_badge }}">{{ ucfirst($item->status) }}</span>
                     <span class="text-xs text-slate-400">{{ $item->created_at->diffForHumans() }}</span>
                 </div>
+                    {{-- 🔥 TAMBAHAN PESERTA --}}
+                    <div class="mt-2 flex flex-wrap gap-1">
+                        @forelse($item->peserta->take(3) as $p)
+                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] rounded">
+                                {{ $p->name }}
+                            </span>
+                        @empty
+                            <span class="text-[10px] text-gray-400">
+                                Belum ada peserta
+                            </span>
+                        @endforelse
+
+                        {{-- kalau peserta banyak --}}
+                        @if($item->peserta->count() > 3)
+                            <span class="text-[10px] text-gray-500">
+                                +{{ $item->peserta->count() - 3 }} lainnya
+                            </span>
+                        @endif
+                    </div>
             </a>
             @empty
             <p class="text-sm text-slate-400 text-center py-4">Belum ada kegiatan</p>

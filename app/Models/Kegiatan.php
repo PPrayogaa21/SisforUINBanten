@@ -94,4 +94,13 @@ class Kegiatan extends Model
             default => 'bg-gray-100 text-gray-800',
         };
     }
+    public function isPeserta($userId)
+    {
+        return $this->peserta()->where('user_id', $userId)->exists();
+    }
+
+    public function isNarasumber($userId)
+    {
+        return $this->narasumber()->where('user_id', $userId)->exists();
+    }
 }

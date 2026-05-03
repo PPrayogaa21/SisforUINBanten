@@ -5,7 +5,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\BiodataController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\RoleSelectionController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
@@ -32,13 +32,12 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 
 // ===== AUTHENTICATED =====
 Route::middleware('auth')->group(function () {
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     // Biodata
     Route::get('/biodata', [BiodataController::class, 'create'])->name('biodata.create');
     Route::post('/biodata', [BiodataController::class, 'store'])->name('biodata.store');
 
-    // Role Selection
-    Route::get('/select-role', [RoleSelectionController::class, 'show'])->name('select-role');
-    Route::post('/select-role', [RoleSelectionController::class, 'select'])->name('select-role.submit');
+   
 
     // Profile
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
@@ -96,7 +95,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // ===== PESERTA =====
-Route::middleware(['auth', 'check.biodata', 'check.role:peserta'])->prefix('peserta')->name('peserta.')->group(function () {
+Route::middleware(['auth', 'check.biodata'])->prefix('peserta')->name('peserta.')->group(function () {
     Route::get('/dashboard', [PesertaDashboardController::class, 'index'])->name('dashboard');
     Route::get('/kegiatan', [PesertaKegiatanController::class, 'index'])->name('kegiatan.index');
     Route::get('/kegiatan/{kegiatan}', [PesertaKegiatanController::class, 'show'])->name('kegiatan.show');
@@ -109,7 +108,7 @@ Route::middleware(['auth', 'check.biodata', 'check.role:peserta'])->prefix('pese
 });
 
 // ===== NARASUMBER =====
-Route::middleware(['auth', 'check.biodata', 'check.role:narasumber'])->prefix('narasumber')->name('narasumber.')->group(function () {
+Route::middleware(['auth', 'check.biodata'])->prefix('narasumber')->name('narasumber.')->group(function () {
     Route::get('/dashboard', [NarasumberDashboardController::class, 'index'])->name('dashboard');
     Route::get('/kegiatan', [NarasumberKegiatanController::class, 'index'])->name('kegiatan.index');
     Route::get('/kegiatan/{kegiatan}', [NarasumberKegiatanController::class, 'show'])->name('kegiatan.show');

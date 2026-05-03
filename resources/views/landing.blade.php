@@ -33,7 +33,7 @@
                         @if(auth()->user()->isAdmin())
                             <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all">Dashboard</a>
                         @else
-                            <a href="{{ route('select-role') }}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all">Dashboard</a>
+                            <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-medium hover:shadow-lg hover:shadow-emerald-500/25 transition-all">Dashboard</a>
                         @endif
                     @else
                         <a href="{{ route('login') }}" class="px-4 py-2 rounded-lg text-sm text-slate-300 hover:text-white transition-colors">Masuk</a>
@@ -70,7 +70,7 @@
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style="animation-delay:0.3s">
                 @auth
-                    <a href="{{ route('select-role') }}" class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold text-lg shadow-2xl shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-1 transition-all duration-300">
+                    <a href="{{route('dashboard')}}" class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold text-lg shadow-2xl shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-1 transition-all duration-300">
                         Masuk Dashboard <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 @else
