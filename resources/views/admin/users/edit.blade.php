@@ -15,7 +15,7 @@
                 <div class="grid sm:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-slate-700">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="nama" value="{{ old('nama', $user->nama ?? $user->name) }}" required 
+                        <input type="text" name="nama" value="{{ old('nama', $user->biodata->nama_lengkap ?? '') }}" required 
                             class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-colors @error('nama') border-red-500 @enderror">
                         @error('nama') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                     </div>
@@ -52,7 +52,7 @@
                 <div class="grid sm:grid-cols-2 gap-6">
                     <div class="space-y-2">
                         <label class="text-sm font-medium text-slate-700">Email <span class="text-red-500">*</span></label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required 
+                        <input type="email" name="email" value="{{ old('email', $user->biodata->email ?? '') }}" required 
                             class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-colors @error('email') border-red-500 @enderror">
                         @error('email') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
                     </div>

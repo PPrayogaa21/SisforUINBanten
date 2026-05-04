@@ -22,7 +22,7 @@
                 <select name="user_id" id="userSelect" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50">
                     <option value="">Pilih pengguna...</option>
                     @foreach($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->nama ?? $user->name }} ({{ $user->biodata->nip ?? '-' }})</option>
+                    <option value="{{ $user->id }}">{{ $user->biodata->nama_lengkap ?? $user->username }} ({{ $user->biodata->nip ?? '-' }})</option>
                     @endforeach
                 </select>
             </div>
@@ -42,7 +42,7 @@
             <tbody class="divide-y divide-slate-100">
                 @forelse($kegiatan->narasumber as $n)
                 <tr class="hover:bg-slate-50/50">
-                    <td class="px-6 py-4 font-medium text-slate-800">{{ $n->nama ?? $n->name }}</td>
+                    <td class="px-6 py-4 font-medium text-slate-800">{{ $n->biodata->nama_lengkap ?? $n->username }}</td>
                     <td class="px-6 py-4 text-slate-500">{{ $n->biodata->nip ?? '-' }}</td>
                     <td class="px-6 py-4 text-slate-500">{{ $n->pivot->topik_materi ?? '-' }}</td>
                     <td class="px-6 py-4 text-right">

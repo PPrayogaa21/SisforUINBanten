@@ -1,13 +1,18 @@
 @php
-    $currentRole = session('active_role', 'peserta');
     $isAdmin = auth()->check() && auth()->user()->isAdmin();
+    $currentRole = 'User Biasa';
+    if (request()->routeIs('peserta.*')) {
+        $currentRole = 'Peserta';
+    } elseif (request()->routeIs('narasumber.*')) {
+        $currentRole = 'Narasumber';
+    }
 @endphp
 
 <aside id="sidebar" class="fixed top-0 left-0 z-50 h-full w-72 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-r border-slate-800/50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
     <!-- Logo Area -->
     <div class="flex items-center gap-3 px-6 h-16 border-b border-slate-800/50">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <i class="fas fa-building-columns text-white text-sm"></i>
+        <div class="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <img src="/img/logo-uin.png" alt="Logo UIN" class="w-full h-full object-contain">
         </div>
         <div>
             <h2 class="text-white font-bold text-sm tracking-wide">SITSFOR</h2>
@@ -25,11 +30,11 @@
                 @if(auth()->user()->biodata && auth()->user()->biodata->foto)
                     <img src="{{ asset('storage/' . auth()->user()->biodata->foto) }}" alt="Avatar" class="w-full h-full object-cover">
                 @else
-                    {{ strtoupper(substr(auth()->user()->nama ?? auth()->user()->name ?? 'U', 0, 1)) }}
+                    {{ strtoupper(substr(auth()->user()->biodata->nama_lengkap ?? auth()->user()->username ?? 'U', 0, 1)) }}
                 @endif
             </div>
             <div class="flex-1 min-w-0">
-                <p class="text-white text-sm font-medium truncate">{{ auth()->user()->name ?? 'User' }}</p>
+                <p class="text-white text-sm font-medium truncate">{{ auth()->user()->biodata->nama_lengkap ?? auth()->user()->username ?? 'User' }}</p>
                 <p class="text-slate-500 text-xs truncate">
                     @if($isAdmin)
                         <span class="inline-flex items-center gap-1 text-amber-400"><i class="fas fa-shield-halved text-[10px]"></i> Administrator</span>
@@ -74,19 +79,22 @@
             </a>
 
             {{-- DASHBOARD PESERTA --}}
+            @if(request()->routeIs('peserta.*'))
             <a href="{{ route('peserta.dashboard') }}" 
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('peserta.dashboard') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('peserta.*') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
                 <i class="fas fa-user-check w-5 text-center"></i>
                 <span>Dashboard Peserta</span>
             </a>
+            @endif
 
             {{-- DASHBOARD NARASUMBER --}}
+            @if(request()->routeIs('narasumber.*'))
             <a href="{{ route('narasumber.dashboard') }}" 
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('narasumber.dashboard') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('narasumber.*') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
                 <i class="fas fa-chalkboard-user w-5 text-center"></i>
                 <span>Dashboard Narasumber</span>
-
-
+            </a>
+            @endif
         @endif
 
     </nav>

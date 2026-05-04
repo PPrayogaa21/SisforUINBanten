@@ -13,7 +13,7 @@
                     <span class="px-3 py-1 rounded-full text-xs font-medium {{ $kegiatan->status_badge }}">{{ ucfirst($kegiatan->status) }}</span>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800">{{ $kegiatan->nama_kegiatan }}</h2>
-                <p class="text-slate-500 text-sm mt-1">Dibuat oleh {{ $kegiatan->creator->nama ?? $kegiatan->creator->name }} · {{ $kegiatan->created_at->diffForHumans() }}</p>
+                <p class="text-slate-500 text-sm mt-1">Dibuat oleh {{ $kegiatan->creator->biodata->nama_lengkap ?? $kegiatan->creator->username }} · {{ $kegiatan->created_at->diffForHumans() }}</p>
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('admin.kegiatan.edit', $kegiatan) }}" class="px-4 py-2 rounded-xl bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100 transition-colors"><i class="fas fa-pen mr-1"></i> Edit</a>

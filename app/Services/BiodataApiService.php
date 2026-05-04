@@ -67,7 +67,7 @@ class BiodataApiService
             ['user_id' => $user->id],
             [
                 'nip' => $user->username,
-                'nama_lengkap' => $apiData['nama_lengkap'] ?? $apiData['nama'] ?? $user->nama,
+                'nama_lengkap' => $apiData['nama_lengkap'] ?? $apiData['nama'] ?? ($user->biodata->nama_lengkap ?? $user->username),
                 'jabatan' => $apiData['jabatan'] ?? null,
                 'bagian' => $apiData['bagian'] ?? $apiData['unit_kerja'] ?? null,
                 'pangkat_golongan' => $apiData['pangkat_golongan'] ?? null,

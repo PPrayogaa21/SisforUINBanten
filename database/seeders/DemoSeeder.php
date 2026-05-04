@@ -29,28 +29,27 @@ class DemoSeeder extends Seeder
         foreach ($demoData as $data) {
             $user = User::create([
                 'username' => $data['username'],
-                'nama' => $data['name'],
-                'email' => $data['email'],
                 'password' => Hash::make('password'),
                 'role' => 'user',
                 'biodata_verified' => true,
-                'email_verified_at' => now(),
                 'status' => 1,
-                'ket' => 'USER',
                 'hak_akses' => 2,
-                'adalah' => 'SIMPEG | SISTEM PEGAWAI',
-                'tglreg' => '2019-10-31',
             ]);
 
             Biodata::create([
                 'user_id' => $user->id,
                 'nip' => $data['nip'],
                 'nama_lengkap' => $data['name'],
+                'email' => $data['email'],
+                'email_verified_at' => now(),
                 'jabatan' => $data['jabatan'],
                 'bagian' => $data['unit_kerja'],
                 'pangkat_golongan' => 'III/c',
                 'no_hp' => '08' . rand(1000000000, 9999999999),
                 'from_api' => true,
+                'ket' => 'USER',
+                'adalah' => 'SIMPEG | SISTEM PEGAWAI',
+                'tgl_bergabung' => '2019-10-31',
             ]);
 
             $users[] = $user;

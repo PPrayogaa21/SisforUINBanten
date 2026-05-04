@@ -22,8 +22,8 @@
         <div class="w-full max-w-md">
             <!-- Logo -->
             <div class="text-center mb-8 animate-fade-in">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/25 mb-4">
-                    <i class="fas fa-building-columns text-2xl text-white"></i>
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white shadow-lg shadow-emerald-500/25 mb-4 p-2">
+                    <img src="/img/logo-uin.png" alt="Logo UIN SMH Banten" class="w-full h-full object-contain">
                 </div>
                 <h1 class="text-2xl font-bold text-white">SITSFOR</h1>
                 <p class="text-emerald-300/70 text-sm mt-1">Sistem Informasi Kegiatan Luar Kantor</p>

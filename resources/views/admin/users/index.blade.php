@@ -61,10 +61,10 @@
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">
-                                    {{ strtoupper(substr($user->nama ?? $user->name, 0, 1)) }}
+                                    {{ strtoupper(substr($user->biodata->nama_lengkap ?? $user->username ?? 'U', 0, 1)) }}
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-slate-800">{{ $user->nama ?? $user->name }}</p>
+                                    <p class="text-sm font-bold text-slate-800">{{ $user->biodata->nama_lengkap ?? $user->username ?? 'User' }}</p>
                                     <p class="text-xs text-slate-500">ID: {{ $user->username ?? '-' }}</p>
                                 </div>
                             </div>
@@ -77,7 +77,7 @@
                             <p class="text-xs text-slate-500 max-w-[200px] truncate" title="{{ $user->biodata->bagian ?? '' }}">{{ $user->biodata->bagian ?? '-' }}</p>
                         </td>
                         <td class="px-6 py-4">
-                            <p class="text-sm text-slate-600">{{ $user->email }}</p>
+                            <p class="text-sm text-slate-600">{{ $user->biodata->email ?? '-' }}</p>
                         </td>
                         <td class="px-6 py-4">
                             <span class="px-3 py-1 text-xs font-medium rounded-full 

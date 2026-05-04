@@ -29,7 +29,7 @@
                         @if(auth()->user()->biodata && auth()->user()->biodata->foto)
                             <img src="{{ asset('storage/' . auth()->user()->biodata->foto) }}" alt="Avatar" class="w-full h-full object-cover">
                         @else
-                            {{ strtoupper(substr(auth()->user()->nama ?? auth()->user()->name ?? 'U', 0, 1)) }}
+                            {{ strtoupper(substr(auth()->user()->biodata->nama_lengkap ?? auth()->user()->username ?? 'U', 0, 1)) }}
                         @endif
                     </div>
                 </button>
@@ -38,7 +38,7 @@
                 <div id="profileDropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden z-50 opacity-0 scale-95 pointer-events-none transition-all duration-200 ease-out origin-top-right">
                     
                     <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
-                        <p class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->nama ?? auth()->user()->name ?? 'User' }}</p>
+                        <p class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->biodata->nama_lengkap ?? auth()->user()->username ?? 'User' }}</p>
                         <p class="text-xs text-slate-500 truncate">{{ auth()->user()->biodata->nip ?? auth()->user()->username ?? '-' }}</p>
                     </div>
 

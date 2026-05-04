@@ -29,7 +29,7 @@
                 <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center"><i class="fas fa-file-{{ in_array($m->file_type, ['pdf']) ? 'pdf text-red-500' : 'lines text-blue-500' }}"></i></div>
                 <div>
                     <p class="font-medium text-sm text-slate-800">{{ $m->judul }}</p>
-                    <p class="text-xs text-slate-400">{{ strtoupper($m->file_type) }} · {{ $m->file_size_formatted }} · {{ $m->uploader->name }}</p>
+                    <p class="text-xs text-slate-400">{{ strtoupper($m->file_type) }} · {{ $m->file_size_formatted }} · {{ $m->uploader->biodata->nama_lengkap ?? $m->uploader->username }}</p>
                 </div>
             </div>
             <div class="flex gap-1">

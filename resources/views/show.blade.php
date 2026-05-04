@@ -26,8 +26,8 @@
             </a>
             
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                    <i class="fas fa-building-columns text-white text-xs"></i>
+                <div class="w-8 h-8 rounded-lg bg-white p-1 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <img src="/img/logo-uin.png" alt="Logo UIN" class="w-full h-full object-contain">
                 </div>
                 <span class="font-bold text-white hidden sm:block">SITSFOR</span>
             </div>

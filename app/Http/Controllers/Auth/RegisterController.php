@@ -20,7 +20,7 @@ class RegisterController extends Controller
         $validated = $request->validate([
             'username' => 'required|string|unique:users,username|min:1',
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:biodata,email',
             'password' => 'required|string|min:8|confirmed',
         ], [
             'username.unique' => 'Username/NIP sudah terdaftar.',
@@ -31,19 +31,26 @@ class RegisterController extends Controller
 
         $user = User::create([
             'username' => $validated['username'],
-            'nama' => $validated['nama'],
-            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => 'user',
             'biodata_verified' => false,
             'status' => 1,
-            'ket' => 'USER',
             'hak_akses' => 2,
+        ]);
+
+        \App\Models\Biodata::create([
+            'user_id' => $user->id,
+            'nip' => $validated['username'],
+            'nama_lengkap' => $validated['nama'],
+            'email' => $validated['email'],
+            'ket' => 'USER',
             'adalah' => 'SIMPEG | SISTEM PEGAWAI',
-            'tglreg' => now()->format('Y-m-d'),
+            'tgl_bergabung' => now()->format('Y-m-d'),
         ]);
 
         Auth::login($user);
+        
+        session(['just_registered' => true]);
 
         return redirect()->route('biodata.create')
             ->with('info', 'Registrasi berhasil! Silakan lengkapi biodata Anda.');

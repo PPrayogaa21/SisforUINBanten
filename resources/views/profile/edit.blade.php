@@ -25,7 +25,7 @@
                     @if($biodata && $biodata->foto)
                         <img src="{{ asset('storage/' . $biodata->foto) }}" alt="Foto Profil" class="w-full h-full object-cover">
                     @else
-                        <span class="text-3xl font-bold text-slate-300">{{ strtoupper(substr($user->nama ?? $user->name ?? 'U', 0, 1)) }}</span>
+                        <span class="text-3xl font-bold text-slate-300">{{ strtoupper(substr($biodata->nama_lengkap ?? $user->username ?? 'U', 0, 1)) }}</span>
                     @endif
                 </div>
                 <label for="foto" class="absolute bottom-0 right-0 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-emerald-600 shadow-md transition-colors">
@@ -46,7 +46,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
-                    <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $biodata->nama_lengkap ?? $user->nama ?? $user->name) }}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all bg-slate-50 focus:bg-white">
+                    <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $biodata->nama_lengkap ?? '') }}" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all bg-slate-50 focus:bg-white">
                     @error('nama_lengkap') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
                 </div>
                 

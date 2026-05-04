@@ -27,14 +27,14 @@
                 @if($narasumber->count() > 0)
                     <optgroup label="Narasumber">
                         @foreach($narasumber as $n)
-                            <option value="{{ $n->id }}">{{ $n->name }}</option>
+                            <option value="{{ $n->id }}">{{ $n->biodata->nama_lengkap ?? $n->username }}</option>
                         @endforeach
                     </optgroup>
                 @endif
                 @if($peserta->count() > 0)
                     <optgroup label="Peserta">
                         @foreach($peserta as $p)
-                            <option value="{{ $p->id }}">{{ $p->name }}</option>
+                            <option value="{{ $p->id }}">{{ $p->biodata->nama_lengkap ?? $p->username }}</option>
                         @endforeach
                     </optgroup>
                 @endif

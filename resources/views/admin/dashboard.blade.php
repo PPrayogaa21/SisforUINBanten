@@ -93,7 +93,7 @@
                     <div class="mt-2 flex flex-wrap gap-1">
                         @forelse($item->peserta->take(3) as $p)
                             <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] rounded">
-                                {{ $p->name }}
+                                {{ $p->biodata->nama_lengkap ?? $p->username }}
                             </span>
                         @empty
                             <span class="text-[10px] text-gray-400">

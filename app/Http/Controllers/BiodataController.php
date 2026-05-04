@@ -56,12 +56,18 @@ class BiodataController extends Controller
 
         $user->update(['biodata_verified' => true]);
 
+        if (session('just_registered')) {
+            session()->forget('just_registered');
+            auth()->logout();
+            return redirect()->route('login')
+                ->with('success', 'Pendaftaran dan pengisian biodata berhasil. Silakan login untuk melanjutkan.');
+        }
+
         if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard')
                 ->with('success', 'Biodata berhasil disimpan.');
         }
 
         return redirect()->route('dashboard');
-            
     }
 }

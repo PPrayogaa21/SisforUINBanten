@@ -26,26 +26,14 @@ class UserFactory extends Factory
     {
         return [
             'username' => fake()->unique()->numerify('##########'),
-            'nama' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'status' => 1,
-            'ket' => 'USER',
             'hak_akses' => 2,
-            'adalah' => 'SIMPEG | SISTEM PEGAWAI',
-            'tglreg' => now()->format('Y-m-d'),
+            'role' => 'user',
+            'biodata_verified' => false,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
-    }
+
 }

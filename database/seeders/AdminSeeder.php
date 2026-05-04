@@ -12,27 +12,26 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         $admin = User::create([
-            'username' => 'ADMIN001', // Using username instead of nip
-            'nama' => 'Administrator',
-            'email' => 'admin@sitsfor.ac.id',
+            'username' => 'ADMIN001',
             'password' => Hash::make('12345678'),
             'role' => 'admin',
             'biodata_verified' => true,
-            'email_verified_at' => now(),
             'status' => 1,
-            'ket' => 'ADMIN',
             'hak_akses' => 1,
-            'adalah' => 'ADMINISTRATOR',
-            'tglreg' => now()->format('Y-m-d'),
         ]);
 
         Biodata::create([
             'user_id' => $admin->id,
             'nip' => '000000000000000001',
             'nama_lengkap' => 'Administrator Sistem',
+            'email' => 'admin@sitsfor.ac.id',
+            'email_verified_at' => now(),
             'jabatan' => 'Admin SITSFOR',
             'bagian' => 'PTIPD',
             'from_api' => false,
+            'ket' => 'ADMIN',
+            'adalah' => 'ADMINISTRATOR',
+            'tgl_bergabung' => now()->format('Y-m-d'),
         ]);
     }
 }

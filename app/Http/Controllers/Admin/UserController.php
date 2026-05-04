@@ -17,8 +17,10 @@ class UserController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+                $q->whereHas('biodata', function($bq) use ($search) {
+                    $bq->where('nama_lengkap', 'like', "%{$search}%")
+                       ->orWhere('email', 'like', "%{$search}%");
+                })->orWhere('username', 'like', "%{$search}%");
             });
         }
 
@@ -36,7 +38,7 @@ class UserController extends Controller
         $request->validate([
             'username' => ['nullable', 'string', 'max:255', 'unique:users'],
             'nama' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:biodata,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:admin,user'],
             'nip' => ['nullable', 'string', 'max:255'],
@@ -46,24 +48,23 @@ class UserController extends Controller
 
         $user = User::create([
             'username' => $request->username,
-            'nama' => $request->nama,
-            'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'biodata_verified' => false,
             'status' => 1,
-            'ket' => strtoupper($request->role),
             'hak_akses' => $request->role == 'admin' ? 1 : 2,
-            'adalah' => $request->role == 'admin' ? 'ADMINISTRATOR' : 'SIMPEG | SISTEM PEGAWAI',
-            'tglreg' => now()->format('Y-m-d'),
         ]);
 
         \App\Models\Biodata::create([
             'user_id' => $user->id,
             'nip' => $request->nip,
             'nama_lengkap' => $request->nama,
+            'email' => $request->email,
             'jabatan' => $request->jabatan,
             'bagian' => $request->bagian,
+            'ket' => strtoupper($request->role),
+            'adalah' => $request->role == 'admin' ? 'ADMINISTRATOR' : 'SIMPEG | SISTEM PEGAWAI',
+            'tgl_bergabung' => now()->format('Y-m-d'),
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
@@ -79,7 +80,7 @@ class UserController extends Controller
         $request->validate([
             'username' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
             'nama' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('biodata', 'email')->ignore($user->biodata->id)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:admin,user'],
             'nip' => ['nullable', 'string', 'max:255'],
@@ -89,8 +90,6 @@ class UserController extends Controller
 
         $data = [
             'username' => $request->username,
-            'nama' => $request->nama,
-            'email' => $request->email,
             'role' => $request->role,
         ];
 
@@ -105,6 +104,7 @@ class UserController extends Controller
             [
                 'nip' => $request->nip,
                 'nama_lengkap' => $request->nama,
+                'email' => $request->email,
                 'jabatan' => $request->jabatan,
                 'bagian' => $request->bagian,
             ]

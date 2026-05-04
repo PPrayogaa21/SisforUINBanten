@@ -49,7 +49,7 @@
             <div class="p-3 rounded-xl bg-slate-50 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <i class="fas fa-file-lines text-blue-500"></i>
-                    <div><p class="text-sm font-medium text-slate-700">{{ $m->judul }}</p><p class="text-xs text-slate-400">{{ strtoupper($m->file_type) }} · {{ $m->file_size_formatted }} · {{ $m->uploader->name }}</p></div>
+                    <div><p class="text-sm font-medium text-slate-700">{{ $m->judul }}</p><p class="text-xs text-slate-400">{{ strtoupper($m->file_type) }} · {{ $m->file_size_formatted }} · {{ $m->uploader->biodata->nama_lengkap ?? $m->uploader->username }}</p></div>
                 </div>
                 <a href="{{ Storage::disk('public')->url($m->file_path) }}" target="_blank" class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></a>
             </div>
@@ -63,8 +63,8 @@
         <div class="space-y-2">
             @forelse($kegiatan->peserta as $p)
             <div class="p-3 rounded-xl bg-slate-50 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-xs font-bold">{{ strtoupper(substr($p->name, 0, 1)) }}</div>
-                <div><p class="text-sm font-medium text-slate-700">{{ $p->name }}</p><p class="text-xs text-slate-400">{{ $p->biodata->unit_kerja ?? $p->nip }}</p></div>
+                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-xs font-bold">{{ strtoupper(substr($p->biodata->nama_lengkap ?? $p->username ?? 'U', 0, 1)) }}</div>
+                <div><p class="text-sm font-medium text-slate-700">{{ $p->biodata->nama_lengkap ?? $p->username }}</p><p class="text-xs text-slate-400">{{ $p->biodata->bagian ?? $p->biodata->nip }}</p></div>
             </div>
             @empty
             <p class="text-sm text-slate-400">Belum ada peserta</p>

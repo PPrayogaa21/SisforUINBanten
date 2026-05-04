@@ -60,7 +60,7 @@
                 <select name="user_id" id="userSelect" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50">
                     <option value="">Pilih pengguna...</option>
                     @foreach($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->nama ?? $user->name }} ({{ $user->biodata->nip ?? '-' }})</option>
+                    <option value="{{ $user->id }}">{{ $user->biodata->nama_lengkap ?? $user->username }} ({{ $user->biodata->nip ?? '-' }})</option>
                     @endforeach
                 </select>
             </div>
@@ -88,7 +88,7 @@
                     };
                 @endphp
                 <tr class="hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-4 font-medium text-slate-800">{{ $p->nama ?? $p->name }}</td>
+                    <td class="px-6 py-4 font-medium text-slate-800">{{ $p->biodata->nama_lengkap ?? $p->username }}</td>
                     <td class="px-6 py-4 text-slate-500 font-mono text-xs">{{ $p->biodata->nip ?? '-' }}</td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">

@@ -45,11 +45,8 @@ class ProfileController extends Controller
         );
 
         // Update User Model (nama & password)
-        $userData = [
-            'nama' => $request->nama_lengkap,
-        ];
-
-        $user->update($userData);
+        // No longer needed as nama is now in biodata
+        // $user->update(['nama' => $request->nama_lengkap]);
 
         return back()->with('success', 'Profil Anda berhasil diperbarui!');
     }

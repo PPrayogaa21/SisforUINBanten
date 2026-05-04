@@ -12,6 +12,8 @@ class Biodata extends Model
         'user_id',
         'nip',
         'nama_lengkap',
+        'email',
+        'email_verified_at',
         'jabatan',
         'bagian',
         'pangkat_golongan',
@@ -19,12 +21,17 @@ class Biodata extends Model
         'alamat',
         'foto',
         'from_api',
+        'adalah',
+        'ket',
+        'tgl_bergabung',
     ];
 
     protected function casts(): array
     {
         return [
             'from_api' => 'boolean',
+            'email_verified_at' => 'datetime',
+            'tgl_bergabung' => 'date',
         ];
     }
 
