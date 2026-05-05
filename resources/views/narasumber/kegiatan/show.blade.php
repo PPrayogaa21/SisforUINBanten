@@ -11,7 +11,16 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
+    {{-- Tombol Kembali --}}
+    <div>
+        <a href="{{ route('narasumber.kegiatan.index') }}"
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors">
+            <i class="fas fa-arrow-left text-xs"></i> Kembali
+        </a>
+    </div>
+
     <!-- Info -->
+
     <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
         <div class="flex items-center gap-2 mb-3">
             <span class="px-3 py-1 rounded-full text-xs font-medium {{ $kegiatan->jenis_badge }}">{{ ucfirst($kegiatan->jenis) }}</span>

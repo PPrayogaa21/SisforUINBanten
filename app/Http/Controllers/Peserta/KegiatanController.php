@@ -75,5 +75,14 @@ class KegiatanController extends Controller
         return back()->with('success', 'Berhasil absen');
     }
 
+    public function downloadDokumentasi($id)
+    {
+        $dokumentasi = \App\Models\KegiatanDokumentasi::findOrFail($id);
+    
+        if (!Storage::disk('public')->exists($dokumentasi->file_path)) {
+            abort(404, 'File foto tidak ditemukan.');
+        }
 
+        return Storage::disk('public')->download($dokumentasi->file_path);
+    }
 }

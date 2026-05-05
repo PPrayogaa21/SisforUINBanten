@@ -14,34 +14,66 @@
 
     <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
         <h3 class="font-semibold text-slate-800 mb-4"><i class="fas fa-file-upload text-red-500 mr-2"></i>Upload Dokumen</h3>
-        <form method="POST" action="{{ route('admin.kegiatan.dokumen.upload', $kegiatan) }}" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-3">
+        <form method="POST" action="{{ route('admin.kegiatan.dokumen.upload', $kegiatan) }}" enctype="multipart/form-data" class="space-y-4">
             @csrf
-            <input type="text" name="judul" required placeholder="Judul dokumen" class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50">
-            <select name="jenis" required class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm">
-                <option value="surat_tugas">Surat Tugas</option>
-                <option value="undangan">Undangan</option>
-                <option value="lainnya">Lainnya</option>
-            </select>
-            <select name="target_user_id" required class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm">
-                <option value="">Pilih Penerima Dokumen</option>
-                @if($narasumber->count() > 0)
-                    <optgroup label="Narasumber">
-                        @foreach($narasumber as $n)
-                            <option value="{{ $n->id }}">{{ $n->biodata->nama_lengkap ?? $n->username }}</option>
-                        @endforeach
-                    </optgroup>
-                @endif
-                @if($peserta->count() > 0)
-                    <optgroup label="Peserta">
-                        @foreach($peserta as $p)
-                            <option value="{{ $p->id }}">{{ $p->biodata->nama_lengkap ?? $p->username }}</option>
-                        @endforeach
-                    </optgroup>
-                @endif
-            </select>
-            <input type="file" name="file" required accept=".pdf,.doc,.docx" class="text-sm text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-50 file:text-red-600 file:font-medium">
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600">Upload</button>
             
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Judul Dokumen</label>
+                    <input type="text" name="judul" required placeholder="Judul dokumen" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-400/50">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Dokumen</label>
+                    <select name="jenis" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-red-400/50">
+                        <option value="surat_tugas">Surat Tugas</option>
+                        <option value="undangan">Undangan</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Pilih Penerima Dokumen</label>
+                <div class="border border-slate-200 rounded-xl p-4 max-h-48 overflow-y-auto space-y-2 bg-slate-50">
+                    <div class="mb-3 pb-3 border-b border-slate-200">
+                        <label class="flex items-center gap-2 cursor-pointer w-max">
+                            <input type="checkbox" id="selectAllPenerima" class="rounded text-red-500 focus:ring-red-500 w-4 h-4 border-slate-300">
+                            <span class="text-sm font-semibold text-slate-700">Pilih Semua</span>
+                        </label>
+                    </div>
+
+                    @if($narasumber->count() > 0)
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 mt-2">Narasumber</p>
+                        @foreach($narasumber as $n)
+                        <label class="flex items-center gap-2 cursor-pointer pl-2 w-max">
+                            <input type="checkbox" name="target_user_id[]" value="{{ $n->id }}" class="penerima-checkbox rounded text-red-500 focus:ring-red-500 w-4 h-4 border-slate-300">
+                            <span class="text-sm text-slate-600">{{ $n->biodata->nama_lengkap ?? $n->username }}</span>
+                        </label>
+                        @endforeach
+                    @endif
+
+                    @if($peserta->count() > 0)
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 mt-4">Peserta</p>
+                        @foreach($peserta as $p)
+                        <label class="flex items-center gap-2 cursor-pointer pl-2 w-max">
+                            <input type="checkbox" name="target_user_id[]" value="{{ $p->id }}" class="penerima-checkbox rounded text-red-500 focus:ring-red-500 w-4 h-4 border-slate-300">
+                            <span class="text-sm text-slate-600">{{ $p->biodata->nama_lengkap ?? $p->username }}</span>
+                        </label>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">File Dokumen (PDF, Word)</label>
+                <input type="file" name="file" required accept=".pdf,.doc,.docx" class="w-full text-sm text-slate-500 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-red-50 file:text-red-600 file:font-medium file:cursor-pointer border border-slate-200 rounded-xl p-1 bg-white">
+            </div>
+
+            <div class="flex justify-end pt-2">
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-colors shadow-sm">
+                    <i class="fas fa-paper-plane mr-2"></i> Kirim Dokumen
+                </button>
+            </div>
         </form>
     </div>
 
@@ -76,4 +108,27 @@
         @endforelse
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAll = document.getElementById('selectAllPenerima');
+        const checkboxes = document.querySelectorAll('.penerima-checkbox');
+        
+        if (selectAll) {
+            selectAll.addEventListener('change', function() {
+                checkboxes.forEach(cb => cb.checked = this.checked);
+            });
+            
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const allChecked = Array.from(checkboxes).every(c => c.checked);
+                    const someChecked = Array.from(checkboxes).some(c => c.checked);
+                    selectAll.checked = allChecked;
+                    selectAll.indeterminate = someChecked && !allChecked;
+                });
+            });
+        }
+    });
+</script>
+@endpush
 @endsection

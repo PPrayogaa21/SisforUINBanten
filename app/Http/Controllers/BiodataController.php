@@ -31,13 +31,22 @@ class BiodataController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_lengkap' => 'required|string|max:255',
-            'jabatan' => 'nullable|string|max:255',
-            'bagian' => 'nullable|string|max:255',
-            'pangkat_golongan' => 'nullable|string|max:255',
-            'no_hp' => 'nullable|string|max:20',
-            'alamat' => 'nullable|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'nama_lengkap'    => 'required|string|max:255',
+            'email'           => 'nullable|email|max:255',
+            'tempat_lahir'    => 'nullable|string|max:255',
+            'tanggal_lahir'   => 'nullable|date',
+            'jabatan'         => 'nullable|string|max:255',
+            'bagian'          => 'nullable|string|max:255',
+            'pangkat_golongan'=> 'nullable|string|max:255',
+            'no_hp'           => 'nullable|string|max:20',
+            'alamat_rumah'    => 'nullable|string',
+            'alamat_kantor'   => 'nullable|string',
+            'pendidikan_s1'   => 'nullable|string|max:255',
+            'pendidikan_s2'   => 'nullable|string|max:255',
+            'pendidikan_s3'   => 'nullable|string|max:255',
+            'no_rekening'     => 'nullable|string|max:100',
+            'npwp'            => 'nullable|string|max:50',
+            'foto'            => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $user = auth()->user();
@@ -49,7 +58,7 @@ class BiodataController extends Controller
         Biodata::updateOrCreate(
             ['user_id' => $user->id],
             array_merge($validated, [
-                'nip' => $user->username,
+                'nip'      => $user->username,
                 'from_api' => false,
             ])
         );

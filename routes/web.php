@@ -63,6 +63,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/kegiatan/{kegiatan}/peserta', [AdminKegiatanController::class, 'addPeserta'])->name('kegiatan.peserta.add');
     Route::delete('/kegiatan/{kegiatan}/peserta/{user}', [AdminKegiatanController::class, 'removePeserta'])->name('kegiatan.peserta.remove');
     Route::patch('/kegiatan/{kegiatan}/peserta/{user}/kehadiran', [AdminKegiatanController::class, 'updateKehadiran'])->name('kegiatan.peserta.kehadiran');
+    Route::post('/kegiatan/{kegiatan}/peserta/cetak-pdf', [AdminKegiatanController::class, 'cetakPdfPeserta'])->name('kegiatan.peserta.cetak-pdf');
 
     // Kegiatan - Narasumber
     Route::get('/kegiatan/{kegiatan}/narasumber', [AdminKegiatanController::class, 'narasumberList'])->name('kegiatan.narasumber');
@@ -103,6 +104,7 @@ Route::middleware(['auth', 'check.biodata'])->prefix('peserta')->name('peserta.'
     Route::post('/kegiatan/{kegiatan}/absen', [PesertaKegiatanController::class, 'absen'])->name('kegiatan.absen');
     Route::get('/materi/{materi}/download', [PesertaKegiatanController::class, 'downloadMateri'])->name('materi.download');
     Route::get('/kegiatan/{kegiatan}/dokumen/{dokumen}/download', [PesertaKegiatanController::class, 'downloadDokumen'])->name('dokumen.download');
+    Route::get('/dokumentasi/{dokumentasi}/download', [PesertaKegiatanController::class, 'downloadDokumentasi'])->name('dokumentasi.download');
     Route::get('/kegiatan/{kegiatan}/kuesioner/{kuesioner}', [PesertaKuesionerController::class, 'fill'])->name('kuesioner.fill');
     Route::post('/kegiatan/{kegiatan}/kuesioner/{kuesioner}', [PesertaKuesionerController::class, 'submit'])->name('kuesioner.submit');
 });

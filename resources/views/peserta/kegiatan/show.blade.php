@@ -184,9 +184,14 @@
                                 <p class="text-[11px] font-semibold text-slate-400 uppercase mt-1 tracking-wider">{{ $m->file_type }} • {{ round($m->file_size / 1024, 2) }} KB</p>
                             </div>
                         </div>
-                        <a href="{{ route('peserta.materi.download', $m) }}" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 hover:bg-blue-600 hover:text-white transition-colors border border-blue-100" title="Download Materi">
-                            <i class="fas fa-download text-sm"></i>
-                        </a>
+                        <div class="flex gap-2">
+                            <a href="{{ asset('storage/' . $m->file_path) }}" target="_blank" class="w-10 h-10 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center shrink-0 hover:bg-slate-200 transition-colors border border-slate-200" title="Lihat Materi">
+                                <i class="fas fa-eye text-sm"></i>
+                            </a>
+                            <a href="{{ route('peserta.materi.download', $m) }}" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 hover:bg-blue-600 hover:text-white transition-colors border border-blue-100" title="Download Materi">
+                                <i class="fas fa-download text-sm"></i>
+                            </a>
+                        </div>
                     </div>
                     @endforeach
                 </div>
@@ -219,6 +224,30 @@
                     <a href="{{ route('peserta.dokumen.download', [$kegiatan, $doc]) }}" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center shrink-0 hover:bg-slate-700 hover:text-white transition-colors border border-slate-300" title="Download Dokumen">
                         <i class="fas fa-download text-sm"></i>
                     </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        <!-- Dokumentasi / Foto -->
+        @if($kegiatan->dokumentasi->count() > 0)
+        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-images text-slate-400"></i> Galeri & Foto
+            </h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-3">
+                @foreach($kegiatan->dokumentasi as $foto)
+                <div class="relative group rounded-xl overflow-hidden border border-slate-200 shadow-sm aspect-square">
+                    <img src="{{ asset('storage/' . $foto->file_path) }}" alt="{{ $foto->caption ?? 'Dokumentasi Kegiatan' }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+                        <a href="{{ asset('storage/' . $foto->file_path) }}" target="_blank" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white text-white hover:text-slate-900 flex items-center justify-center backdrop-blur-sm transition-colors" title="Lihat Foto">
+                            <i class="fas fa-eye text-xs"></i>
+                        </a>
+                        <a href="{{ route('peserta.dokumentasi.download', $foto->id) }}" class="w-8 h-8 rounded-full bg-emerald-500/80 hover:bg-emerald-500 text-white flex items-center justify-center backdrop-blur-sm transition-colors" title="Download Foto">
+                            <i class="fas fa-download text-xs"></i>
+                        </a>
+                    </div>
                 </div>
                 @endforeach
             </div>

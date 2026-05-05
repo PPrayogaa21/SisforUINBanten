@@ -70,57 +70,77 @@
 
     <!-- Daftar Peserta -->
     <div class="rounded-2xl bg-white border border-slate-200/50 shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
-            <thead><tr class="border-b border-slate-100 bg-slate-50/50">
-                <th class="text-left px-6 py-4 font-semibold text-slate-600">Nama</th>
-                <th class="text-left px-6 py-4 font-semibold text-slate-600">NIP</th>
-                <th class="text-left px-6 py-4 font-semibold text-slate-600">Status Kehadiran</th>
-                <th class="text-right px-6 py-4 font-semibold text-slate-600">Aksi</th>
-            </tr></thead>
-            <tbody class="divide-y divide-slate-100">
-                @forelse($kegiatan->peserta as $p)
-                @php
-                    $statusKehadiran = $p->pivot->status_kehadiran;
-                    $badge = match($statusKehadiran) {
-                        'hadir'       => ['bg-emerald-100 text-emerald-700', 'fa-circle-check', 'Hadir'],
-                        'tidak_hadir' => ['bg-red-100 text-red-600', 'fa-circle-xmark', 'Tidak Hadir'],
-                        default       => ['bg-amber-100 text-amber-600', 'fa-clock', 'Belum Absen'],
-                    };
-                @endphp
-                <tr class="hover:bg-slate-50/50 transition-colors">
-                    <td class="px-6 py-4 font-medium text-slate-800">{{ $p->biodata->nama_lengkap ?? $p->username }}</td>
-                    <td class="px-6 py-4 text-slate-500 font-mono text-xs">{{ $p->biodata->nip ?? '-' }}</td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-3">
-                            {{-- Indikator Badge --}}
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{ $badge[0] }}">
-                                <i class="fas {{ $badge[1] }} text-xs"></i>
-                                {{ $badge[2] }}
-                            </span>
-                            {{-- Dropdown Update Admin --}}
-                            <form method="POST" action="{{ route('admin.kegiatan.peserta.kehadiran', [$kegiatan, $p]) }}" class="inline">
-                                @csrf @method('PATCH')
-                                <select name="status_kehadiran" onchange="this.form.submit()" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none text-slate-600 bg-white">
+        <form method="POST" action="{{ route('admin.kegiatan.peserta.cetak-pdf', $kegiatan) }}" id="formCetakPdf" target="_blank">
+            @csrf
+            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                <h3 class="font-semibold text-slate-800">Daftar Peserta</h3>
+                <button type="submit" id="btnCetakPdf" class="px-4 py-2 rounded-xl bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm" disabled>
+                    <i class="fas fa-print mr-2"></i> Cetak PDF Biodata
+                </button>
+            </div>
+            <table class="w-full text-sm">
+                <thead><tr class="border-b border-slate-100 bg-slate-50/50">
+                    <th class="text-left px-6 py-4 font-semibold text-slate-600 w-12">
+                        <input type="checkbox" id="selectAllPeserta" class="rounded text-emerald-500 focus:ring-emerald-500 w-4 h-4 border-slate-300">
+                    </th>
+                    <th class="text-left px-6 py-4 font-semibold text-slate-600">Nama</th>
+                    <th class="text-left px-6 py-4 font-semibold text-slate-600">NIP</th>
+                    <th class="text-left px-6 py-4 font-semibold text-slate-600">Status Kehadiran</th>
+                    <th class="text-right px-6 py-4 font-semibold text-slate-600">Aksi</th>
+                </tr></thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($kegiatan->peserta as $p)
+                    @php
+                        $statusKehadiran = $p->pivot->status_kehadiran;
+                        $badge = match($statusKehadiran) {
+                            'hadir'       => ['bg-emerald-100 text-emerald-700', 'fa-circle-check', 'Hadir'],
+                            'tidak_hadir' => ['bg-red-100 text-red-600', 'fa-circle-xmark', 'Tidak Hadir'],
+                            default       => ['bg-amber-100 text-amber-600', 'fa-clock', 'Belum Absen'],
+                        };
+                    @endphp
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <input type="checkbox" name="peserta_ids[]" value="{{ $p->id }}" class="peserta-checkbox rounded text-emerald-500 focus:ring-emerald-500 w-4 h-4 border-slate-300">
+                        </td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ $p->biodata->nama_lengkap ?? $p->username }}</td>
+                        <td class="px-6 py-4 text-slate-500 font-mono text-xs">{{ $p->biodata->nip ?? '-' }}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                {{-- Indikator Badge --}}
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold {{ $badge[0] }}">
+                                    <i class="fas {{ $badge[1] }} text-xs"></i>
+                                    {{ $badge[2] }}
+                                </span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <!-- Update and Delete actions isolated -->
+                            <div class="flex justify-end items-center gap-2">
+                                <select onchange="updateKehadiran('{{ route('admin.kegiatan.peserta.kehadiran', [$kegiatan, $p]) }}', this.value)" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs focus:outline-none text-slate-600 bg-white">
                                     @foreach(['registered' => 'Terdaftar', 'hadir' => 'Hadir', 'tidak_hadir' => 'Tidak Hadir'] as $val => $label)
                                     <option value="{{ $val }}" {{ $statusKehadiran == $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
-                            </form>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-right">
-                        <form method="POST" action="{{ route('admin.kegiatan.peserta.remove', [$kegiatan, $p]) }}" onsubmit="return confirm('Hapus peserta ini?')">
-                            @csrf @method('DELETE')
-                            <button class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"><i class="fas fa-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="4" class="px-6 py-12 text-center text-slate-400"><i class="fas fa-users text-3xl mb-3 block text-slate-300"></i>Belum ada peserta</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+                                <button type="button" onclick="deletePeserta('{{ route('admin.kegiatan.peserta.remove', [$kegiatan, $p]) }}')" class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" class="px-6 py-12 text-center text-slate-400"><i class="fas fa-users text-3xl mb-3 block text-slate-300"></i>Belum ada peserta</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </form>
     </div>
+
+    <!-- Hidden forms for JS submission -->
+    <form id="updateKehadiranForm" method="POST" class="hidden">
+        @csrf @method('PATCH')
+        <input type="hidden" name="status_kehadiran" id="updateKehadiranValue">
+    </form>
+    <form id="deletePesertaForm" method="POST" class="hidden">
+        @csrf @method('DELETE')
+    </form>
 </div>
 
 @push('scripts')
@@ -128,13 +148,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchUser');
         const userSelect = document.getElementById('userSelect');
+        const selectAllPeserta = document.getElementById('selectAllPeserta');
+        const pesertaCheckboxes = document.querySelectorAll('.peserta-checkbox');
+        const btnCetakPdf = document.getElementById('btnCetakPdf');
         
         if (searchInput && userSelect) {
             searchInput.addEventListener('input', function(e) {
                 const term = e.target.value.toLowerCase();
                 
                 Array.from(userSelect.options).forEach(option => {
-                    if(option.value === '') return; // Skip placeholder
+                    if(option.value === '') return;
                     
                     const text = option.text.toLowerCase();
                     if(text.includes(term)) {
@@ -156,7 +179,52 @@
                 }
             });
         }
+
+        // PDF Checkbox Logic
+        function updateBtnState() {
+            const anyChecked = Array.from(pesertaCheckboxes).some(cb => cb.checked);
+            btnCetakPdf.disabled = !anyChecked;
+            if(anyChecked) {
+                btnCetakPdf.classList.remove('bg-blue-400', 'cursor-not-allowed');
+                btnCetakPdf.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            } else {
+                btnCetakPdf.classList.add('bg-blue-400', 'cursor-not-allowed');
+                btnCetakPdf.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            }
+        }
+
+        if (selectAllPeserta) {
+            selectAllPeserta.addEventListener('change', function() {
+                pesertaCheckboxes.forEach(cb => cb.checked = this.checked);
+                updateBtnState();
+            });
+            
+            pesertaCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const allChecked = Array.from(pesertaCheckboxes).every(c => c.checked);
+                    const someChecked = Array.from(pesertaCheckboxes).some(c => c.checked);
+                    selectAllPeserta.checked = allChecked;
+                    selectAllPeserta.indeterminate = someChecked && !allChecked;
+                    updateBtnState();
+                });
+            });
+        }
     });
+
+    function updateKehadiran(url, value) {
+        const form = document.getElementById('updateKehadiranForm');
+        form.action = url;
+        document.getElementById('updateKehadiranValue').value = value;
+        form.submit();
+    }
+
+    function deletePeserta(url) {
+        if(confirm('Hapus peserta ini dari kegiatan?')) {
+            const form = document.getElementById('deletePesertaForm');
+            form.action = url;
+            form.submit();
+        }
+    }
 </script>
 @endpush
 @endsection

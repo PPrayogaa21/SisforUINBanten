@@ -12,23 +12,32 @@
         <a href="{{ route('admin.kegiatan.show', $kegiatan) }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">← Kembali</a>
     </div>
 
-    <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm overflow-visible">
-        <h3 class="font-semibold text-slate-800 mb-4"><i class="fas fa-user-plus text-amber-500 mr-2"></i>Tambah Narasumber</h3>
-        
-        <form method="POST" action="{{ route('admin.kegiatan.narasumber.add', $kegiatan) }}" class="flex flex-col sm:flex-row gap-3 items-start">
-            @csrf
-            <div class="flex-1 w-full relative">
-                <input type="text" id="searchUser" placeholder="Ketik nama atau NIP untuk mencari..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50 mb-2">
-                <select name="user_id" id="userSelect" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50">
-                    <option value="">Pilih pengguna...</option>
-                    @foreach($users as $user)
-                    <option value="{{ $user->id }}">{{ $user->biodata->nama_lengkap ?? $user->username }} ({{ $user->biodata->nip ?? '-' }})</option>
-                    @endforeach
-                </select>
-            </div>
-            <input type="text" name="topik_materi" placeholder="Topik materi (opsional)" class="flex-1 w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50 sm:mt-[52px]">
-            <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors sm:mt-[52px]">Tambah</button>
-        </form>
+    <div class="max-w-2xl">
+        <!-- Tambah dari akun yang sudah ada -->
+        <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm overflow-visible">
+            <h3 class="font-semibold text-slate-800 mb-4"><i class="fas fa-user-plus text-amber-500 mr-2"></i>Pilih Narasumber Terdaftar</h3>
+            
+            <form method="POST" action="{{ route('admin.kegiatan.narasumber.add', $kegiatan) }}" class="space-y-4">
+                @csrf
+                <div class="w-full relative">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Cari User / Narasumber</label>
+                    <input type="text" id="searchUser" placeholder="Ketik nama atau NIP untuk mencari..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50 mb-2">
+                    <select name="user_id" id="userSelect" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50">
+                        <option value="">Pilih pengguna...</option>
+                        @foreach($users as $user)
+                        <option value="{{ $user->id }}">{{ $user->biodata->nama_lengkap ?? $user->username }} ({{ $user->biodata->nip ?? '-' }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Topik Materi (Opsional)</label>
+                    <input type="text" name="topik_materi" placeholder="Topik materi (opsional)" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50">
+                </div>
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600 transition-colors">Tambah ke Kegiatan</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="rounded-2xl bg-white border border-slate-200/50 shadow-sm overflow-hidden">

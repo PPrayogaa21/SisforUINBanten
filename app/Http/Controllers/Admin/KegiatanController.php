@@ -140,6 +140,21 @@ class KegiatanController extends Controller
     
         return back()->with('success', 'Berhasil absen');
     }
+    public function cetakPdfPeserta(Request $request, Kegiatan $kegiatan)
+    {
+        $request->validate([
+            'peserta_ids' => 'required|array',
+            'peserta_ids.*' => 'exists:users,id'
+        ]);
+
+        $peserta = User::whereIn('id', $request->peserta_ids)->with('biodata')->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.kegiatan.pdf_biodata', compact('kegiatan', 'peserta'));
+        $pdf->setPaper('a4', 'portrait');
+        
+        return $pdf->stream('Biodata_Peserta_' . $kegiatan->id . '.pdf');
+    }
+
     /* =======================
         NARASUMBER
     ======================= */
@@ -287,21 +302,24 @@ class KegiatanController extends Controller
         $request->validate([
             'file' => 'required|file|max:2048',
             'judul' => 'required',
-            'target_user_id' => 'required'
+            'target_user_id' => 'required|array',
+            'target_user_id.*' => 'required|exists:users,id'
         ]);
     
         $path = $request->file('file')->store('dokumen', 'public');
     
-        KegiatanDokumen::create([
-            'kegiatan_id' => $kegiatan->id,
-            'judul' => $request->judul,
-            'jenis' => $request->jenis,
-            'file_path' => $path,
-            'user_id' => auth()->id(),
-            'target_user_id' => $request->target_user_id, 
-        ]);
+        foreach ($request->target_user_id as $userId) {
+            KegiatanDokumen::create([
+                'kegiatan_id' => $kegiatan->id,
+                'judul' => $request->judul,
+                'jenis' => $request->jenis,
+                'file_path' => $path,
+                'user_id' => auth()->id(),
+                'target_user_id' => $userId, 
+            ]);
+        }
     
-        return back()->with('success', 'Surat tugas terkirim');
+        return back()->with('success', 'Dokumen terkirim ke penerima yang dipilih');
     }
 
     public function deleteDokumen(Kegiatan $kegiatan, KegiatanDokumen $dokumen)

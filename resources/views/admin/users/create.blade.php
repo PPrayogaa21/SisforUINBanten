@@ -29,29 +29,7 @@
                     </div>
                 </div>
 
-                <div class="grid sm:grid-cols-3 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700">NIP <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                        <input type="text" name="nip" value="{{ old('nip') }}" 
-                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors @error('nip') border-red-500 @enderror"
-                            placeholder="199001012020121001">
-                        @error('nip') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700">Jabatan <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                        <input type="text" name="jabatan" value="{{ old('jabatan') }}" 
-                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                            placeholder="Lektor / Guru Besar">
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-slate-700">Bagian <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                        <input type="text" name="bagian" value="{{ old('bagian') }}" 
-                            class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
-                            placeholder="Fakultas / Unit">
-                    </div>
-                </div>
+                <!-- fields removed -->
 
                 <div class="grid sm:grid-cols-2 gap-6">
                     <div class="space-y-2">

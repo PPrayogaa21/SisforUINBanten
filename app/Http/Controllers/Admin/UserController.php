@@ -41,9 +41,6 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:biodata,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:admin,user'],
-            'nip' => ['nullable', 'string', 'max:255'],
-            'jabatan' => ['nullable', 'string', 'max:255'],
-            'bagian' => ['nullable', 'string', 'max:255'],
         ]);
 
         $user = User::create([
@@ -57,17 +54,14 @@ class UserController extends Controller
 
         \App\Models\Biodata::create([
             'user_id' => $user->id,
-            'nip' => $request->nip,
             'nama_lengkap' => $request->nama,
             'email' => $request->email,
-            'jabatan' => $request->jabatan,
-            'bagian' => $request->bagian,
             'ket' => strtoupper($request->role),
             'adalah' => $request->role == 'admin' ? 'ADMINISTRATOR' : 'SIMPEG | SISTEM PEGAWAI',
             'tgl_bergabung' => now()->format('Y-m-d'),
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan.');
+        return redirect()->route('admin.users.edit', $user)->with('success', 'Akun berhasil dibuat. Silakan lengkapi biodata.');
     }
 
     public function edit(User $user)
@@ -78,14 +72,11 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'username' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'nama' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('biodata', 'email')->ignore($user->biodata->id)],
+            'username' => ['nullable', 'string', 'max:255', \Illuminate\Validation\Rule::unique('users')->ignore($user->id)],
+            'nama_lengkap' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', \Illuminate\Validation\Rule::unique('biodata', 'email')->ignore($user->biodata->id ?? null)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:admin,user'],
-            'nip' => ['nullable', 'string', 'max:255'],
-            'jabatan' => ['nullable', 'string', 'max:255'],
-            'bagian' => ['nullable', 'string', 'max:255'],
         ]);
 
         $data = [
@@ -101,13 +92,11 @@ class UserController extends Controller
 
         \App\Models\Biodata::updateOrCreate(
             ['user_id' => $user->id],
-            [
-                'nip' => $request->nip,
-                'nama_lengkap' => $request->nama,
-                'email' => $request->email,
-                'jabatan' => $request->jabatan,
-                'bagian' => $request->bagian,
-            ]
+            $request->only([
+                'nama_lengkap', 'email', 'nip', 'jabatan', 'bagian', 'pangkat_golongan', 
+                'tempat_lahir', 'tanggal_lahir', 'pendidikan_s1', 'pendidikan_s2', 'pendidikan_s3', 
+                'no_rekening', 'npwp', 'alamat_kantor', 'alamat_rumah', 'no_hp'
+            ])
         );
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil diperbarui.');

@@ -16,6 +16,7 @@
                 <p class="text-slate-500 text-sm mt-1">Dibuat oleh {{ $kegiatan->creator->biodata->nama_lengkap ?? $kegiatan->creator->username }} · {{ $kegiatan->created_at->diffForHumans() }}</p>
             </div>
             <div class="flex gap-2">
+                <a href="{{ route('admin.kegiatan.index') }}" class="px-4 py-2 rounded-xl bg-slate-50 text-slate-600 text-sm font-medium hover:bg-slate-100 transition-colors"><i class="fas fa-arrow-left mr-1"></i> Kembali</a>
                 <a href="{{ route('admin.kegiatan.edit', $kegiatan) }}" class="px-4 py-2 rounded-xl bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100 transition-colors"><i class="fas fa-pen mr-1"></i> Edit</a>
             </div>
         </div>

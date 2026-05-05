@@ -29,6 +29,25 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
 
+        $user = User::where('username', $credentials['username'])->first();
+
+        if ($user) {
+            $dbPassword = $user->getRawOriginal('password');
+            // Cek apakah password di database tidak menggunakan format Bcrypt
+            if ($dbPassword && !str_starts_with($dbPassword, '$2y$') && !str_starts_with($dbPassword, '$2a$') && !str_starts_with($dbPassword, '$2b$')) {
+                // Jika password cocok dengan plain text atau MD5, update ke Bcrypt
+                if ($dbPassword === $credentials['password'] || $dbPassword === md5($credentials['password'])) {
+                    $user->password = $credentials['password']; // Otomatis di-hash oleh cast 'hashed'
+                    $user->save();
+                } else {
+                    // Jika salah, gagalkan login agar Auth::attempt tidak error BcryptHasher
+                    return back()->withErrors([
+                        'username' => 'Username/NIP atau password salah.',
+                    ])->onlyInput('username');
+                }
+            }
+        }
+
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']], $request->boolean('remember'))) {
             $request->session()->regenerate();
 
