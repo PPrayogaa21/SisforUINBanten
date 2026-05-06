@@ -35,7 +35,7 @@ class KegiatanController extends Controller
     {
         $user = auth()->user();
     
-        // 🔒 WAJIB: cek akses
+        // cek akses
         if (!$kegiatan->narasumber()->where('user_id', $user->id)->exists()) {
             abort(403);
         }

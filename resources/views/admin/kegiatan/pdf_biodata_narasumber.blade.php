@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Biodata Peserta</title>
+    <title>Biodata Narasumber</title>
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -80,16 +80,16 @@
             }
         }
     @endphp
-    @foreach($peserta as $index => $p)
+    @foreach($narasumber as $index => $n)
         @php
-            $bio = $p->biodata;
+            $bio = $n->biodata;
         @endphp
 
         <div class="{{ !$loop->last ? 'page-break' : '' }}">
             
             <div class="header text-center">
                 <img src="{{ public_path('img/logo-uin.png') }}" class="logo" alt="Logo UIN">
-                <h3>BIODATA PESERTA</h3>
+                <h3>BIODATA NARASUMBER</h3>
                 <h3>{{ strtoupper($kegiatan->nama_kegiatan) }}</h3>
                 <h3>UNIVERSITAS ISLAM NEGERI SULTAN MAULANA HASANUDDIN BANTEN</h3>
                 <h3>TAHUN ANGGARAN {{ date('Y') }}</h3>

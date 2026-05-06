@@ -142,12 +142,19 @@ class KegiatanController extends Controller
     }
     public function cetakPdfPeserta(Request $request, Kegiatan $kegiatan)
     {
-        $request->validate([
-            'peserta_ids' => 'required|array',
-            'peserta_ids.*' => 'exists:users,id'
-        ]);
+        if ($request->has('peserta_ids')) {
+            $request->validate([
+                'peserta_ids' => 'required|array',
+                'peserta_ids.*' => 'exists:users,id'
+            ]);
+            $peserta = User::whereIn('id', $request->peserta_ids)->with('biodata')->get();
+        } else {
+            $peserta = $kegiatan->peserta()->with('biodata')->get();
+        }
 
-        $peserta = User::whereIn('id', $request->peserta_ids)->with('biodata')->get();
+        if ($peserta->isEmpty()) {
+            return back()->with('warning', 'Tidak ada peserta untuk dicetak.');
+        }
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.kegiatan.pdf_biodata', compact('kegiatan', 'peserta'));
         $pdf->setPaper('a4', 'portrait');
@@ -202,6 +209,28 @@ class KegiatanController extends Controller
         $kegiatan->narasumber()->detach($user->id);
 
         return back()->with('success','Narasumber dihapus');
+    }
+
+    public function cetakPdfNarasumber(Request $request, Kegiatan $kegiatan)
+    {
+        if ($request->has('narasumber_ids')) {
+            $request->validate([
+                'narasumber_ids' => 'required|array',
+                'narasumber_ids.*' => 'exists:users,id'
+            ]);
+            $narasumber = User::whereIn('id', $request->narasumber_ids)->with('biodata')->get();
+        } else {
+            $narasumber = $kegiatan->narasumber()->with('biodata')->get();
+        }
+
+        if ($narasumber->isEmpty()) {
+            return back()->with('warning', 'Tidak ada narasumber untuk dicetak.');
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.kegiatan.pdf_biodata_narasumber', compact('kegiatan', 'narasumber'));
+        $pdf->setPaper('a4', 'portrait');
+        
+        return $pdf->stream('Biodata_Narasumber_' . $kegiatan->id . '.pdf');
     }
 
     /* =======================
