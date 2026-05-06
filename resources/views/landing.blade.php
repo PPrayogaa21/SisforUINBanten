@@ -70,9 +70,15 @@
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style="animation-delay:0.3s">
                 @auth
-                    <a href="{{route('dashboard')}}" class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold text-lg shadow-2xl shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-1 transition-all duration-300">
-                        Masuk Dashboard <i class="fas fa-arrow-right ml-2"></i>
-                    </a>
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold text-lg shadow-2xl shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-1 transition-all duration-300">
+                            Masuk Dashboard <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold text-lg shadow-2xl shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-1 transition-all duration-300">
+                            Masuk Dashboard <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    @endif
                 @else
                     <a href="{{ route('register') }}" class="px-8 py-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold text-lg shadow-2xl shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-1 transition-all duration-300">
                         Mulai Sekarang <i class="fas fa-arrow-right ml-2"></i>

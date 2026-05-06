@@ -52,7 +52,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return strtolower($this->role) === 'admin' || $this->hak_akses == 1;
     }
 
     public function biodata()

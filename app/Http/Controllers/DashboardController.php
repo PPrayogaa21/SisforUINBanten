@@ -11,6 +11,10 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        if ($user && $user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $kegiatan = Kegiatan::latest()->get();
 
         $kegiatanDiikuti = $kegiatan->filter(function ($item) use ($user) {
