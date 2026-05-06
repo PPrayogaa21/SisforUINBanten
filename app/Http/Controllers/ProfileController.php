@@ -20,6 +20,11 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
+        $isNarasumber = $user->kegiatanSebagaiNarasumber()->exists() || ($user->biodata && strtoupper($user->biodata->ket) === 'NARASUMBER');
+        if ($isNarasumber) {
+            return back()->with('error', 'Narasumber tidak diperbolehkan mengedit biodata sendiri. Silakan hubungi admin.');
+        }
+
         $request->validate([
             'nama_lengkap'     => 'required|string|max:255',
             'email'            => 'nullable|email|max:255',

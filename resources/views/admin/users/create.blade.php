@@ -69,11 +69,11 @@
                 </div>
 
                 <div class="pt-6 border-t border-slate-200/50 flex justify-end gap-3">
-                    <a href="{{ route('admin.users.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors">
-                        Batal
+                    <a href="{{ route('admin.users.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2">
+                        <i class="fas fa-arrow-left text-slate-400"></i> Kembali
                     </a>
-                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white font-medium text-sm hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20">
-                        Simpan User
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white font-semibold text-sm hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+                        <i class="fas fa-save"></i> Simpan User
                     </button>
                 </div>
             </form>

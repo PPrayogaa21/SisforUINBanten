@@ -14,21 +14,12 @@
 <!-- Welcome Section -->
 <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-5">
     <div>
-        <h2 class="text-3xl font-bold text-slate-800 tracking-tight">Selamat datang, {{ explode(' ', $user->biodata->nama_lengkap ?? $user->username ?? 'User')[0] }} 👋</h2>
+        <h2 class="text-3xl font-bold text-slate-800 tracking-tight">Selamat datang, {{ explode(' ', $user->biodata->nama_lengkap ?? $user->username ?? 'User')[0] }}</h2>
         <p class="text-slate-500 mt-2 text-[15px]">
             Anda memiliki <strong class="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">{{ $totalKegiatanDiikuti }}</strong> kegiatan yang dapat dikelola hari ini.
         </p>
     </div>
-    
-    <!-- Quick Actions -->
-    <div class="flex items-center gap-3">
-        <a href="#jadwal" class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm">
-            <i class="fas fa-calendar-day mr-1.5 text-slate-400"></i> Jadwal Hari Ini
-        </a>
-        <a href="#semua-kegiatan" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-semibold transition-all shadow-sm shadow-slate-800/20">
-            <i class="fas fa-magnifying-glass mr-1.5 text-slate-400"></i> Cari Kegiatan
-        </a>
-    </div>
+
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-10">

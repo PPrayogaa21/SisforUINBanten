@@ -99,9 +99,11 @@
         </div>
 
         <div class="flex justify-end gap-3">
-            <a href="{{ route('admin.kegiatan.index') }}" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-colors">Batal</a>
-            <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium text-sm shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all">
-                <i class="fas fa-save mr-2"></i> Simpan Kegiatan
+            <a href="{{ route('admin.kegiatan.index') }}" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2">
+                <i class="fas fa-arrow-left text-slate-400"></i> Kembali
+            </a>
+            <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold text-sm shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all flex items-center gap-2">
+                <i class="fas fa-save"></i> Simpan Kegiatan
             </button>
         </div>
     </form>

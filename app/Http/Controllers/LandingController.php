@@ -10,21 +10,11 @@ class LandingController extends Controller
 {
     public function index()
     {
-        $kegiatanSemua = Kegiatan::with('dokumentasi', 'peserta', 'narasumber')
+        $kegiatanTerbaru = Kegiatan::with('dokumentasi', 'peserta', 'narasumber')
             ->where('status', '!=', 'draft')
+            ->orderBy('waktu_mulai', 'desc')
+            ->take(5)
             ->get();
-
-        $kegiatanTerbaru = $kegiatanSemua->sortBy(function ($kegiatan) {
-            $isUpcoming = in_array($kegiatan->status, ['published', 'ongoing']) && $kegiatan->waktu_mulai >= now();
-            if ($isUpcoming) {
-                // Kategori 1: Akan datang (urutkan naik berdasarkan waktu)
-                return '1_' . str_pad($kegiatan->waktu_mulai->timestamp, 15, '0', STR_PAD_LEFT);
-            } else {
-                // Kategori 2: Sudah selesai/lewat (urutkan turun berdasarkan waktu)
-                $descTimestamp = PHP_INT_MAX - $kegiatan->waktu_mulai->timestamp;
-                return '2_' . str_pad($descTimestamp, 15, '0', STR_PAD_LEFT);
-            }
-        })->values();
 
         $kegiatanBerlangsung = Kegiatan::where('status', 'ongoing')
             ->orderBy('waktu_mulai', 'asc')

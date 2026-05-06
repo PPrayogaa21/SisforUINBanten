@@ -4,9 +4,14 @@
 
 @section('content')
 <div class="max-w-3xl mx-auto">
-    <div class="mb-6">
-        <h2 class="text-lg font-bold text-slate-800">{{ $kuesioner->judul }}</h2>
-        <p class="text-sm text-slate-500">{{ $kegiatan->nama_kegiatan }}</p>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <h2 class="text-lg font-bold text-slate-800">{{ $kuesioner->judul }}</h2>
+            <p class="text-sm text-slate-500">{{ $kegiatan->nama_kegiatan }}</p>
+        </div>
+        <a href="{{ route('peserta.kegiatan.show', $kegiatan) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm shadow-sm transition-all">
+            <i class="fas fa-arrow-left text-slate-400"></i> Kembali
+        </a>
     </div>
 
     <form method="POST" action="{{ route('peserta.kuesioner.submit', [$kegiatan, $kuesioner]) }}" class="space-y-4">
@@ -42,9 +47,11 @@
         @endforeach
 
         <div class="flex justify-end gap-3">
-            <a href="{{ route('peserta.kegiatan.show', $kegiatan) }}" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-medium text-sm">Batal</a>
-            <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-medium text-sm shadow-lg shadow-emerald-500/20">
-                <i class="fas fa-paper-plane mr-2"></i> Kirim Jawaban
+            <a href="{{ route('peserta.kegiatan.show', $kegiatan) }}" class="px-6 py-3 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2">
+                <i class="fas fa-arrow-left text-slate-400"></i> Kembali
+            </a>
+            <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold text-sm shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all flex items-center gap-2">
+                <i class="fas fa-paper-plane"></i> Kirim Jawaban
             </button>
         </div>
     </form>

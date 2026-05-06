@@ -43,9 +43,11 @@
 
         <!-- Submit -->
         <div class="flex items-center justify-end gap-3">
-            <a href="{{ route('profile.edit') }}" class="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors">Batal</a>
-            <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all active:scale-95 flex items-center gap-2">
-                <i class="fas fa-check"></i> Perbarui Password
+            <a href="{{ route('profile.edit') }}" class="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-sm hover:bg-slate-50 transition-colors flex items-center gap-2">
+                <i class="fas fa-arrow-left text-slate-400"></i> Kembali
+            </a>
+            <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all active:scale-95 flex items-center gap-2">
+                <i class="fas fa-save"></i> Perbarui Password
             </button>
         </div>
     </form>

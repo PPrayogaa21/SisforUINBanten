@@ -9,7 +9,9 @@
             <h2 class="text-lg font-bold text-slate-800">{{ $kegiatan->nama_kegiatan }}</h2>
             <p class="text-sm text-slate-500">Upload foto dokumentasi kegiatan</p>
         </div>
-        <a href="{{ route('admin.kegiatan.show', $kegiatan) }}" class="text-sm text-emerald-600 font-medium">← Kembali</a>
+        <a href="{{ route('admin.kegiatan.show', $kegiatan) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm shadow-sm transition-all">
+            <i class="fas fa-arrow-left text-slate-400"></i> Kembali
+        </a>
     </div>
 
     <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">

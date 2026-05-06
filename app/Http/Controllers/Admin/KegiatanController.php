@@ -142,6 +142,10 @@ class KegiatanController extends Controller
     }
     public function cetakPdfPeserta(Request $request, Kegiatan $kegiatan)
     {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Akses ditolak. Hanya admin yang dapat mengakses fitur ini.');
+        }
+
         if ($request->has('peserta_ids')) {
             $request->validate([
                 'peserta_ids' => 'required|array',
@@ -156,7 +160,9 @@ class KegiatanController extends Controller
             return back()->with('warning', 'Tidak ada peserta untuk dicetak.');
         }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.kegiatan.pdf_biodata', compact('kegiatan', 'peserta'));
+        $printDate = \Carbon\Carbon::now();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.kegiatan.pdf_biodata', compact('kegiatan', 'peserta', 'printDate'));
         $pdf->setPaper('a4', 'portrait');
         
         return $pdf->stream('Biodata_Peserta_' . $kegiatan->id . '.pdf');
@@ -213,6 +219,10 @@ class KegiatanController extends Controller
 
     public function cetakPdfNarasumber(Request $request, Kegiatan $kegiatan)
     {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Akses ditolak. Hanya admin yang dapat mengakses fitur ini.');
+        }
+
         if ($request->has('narasumber_ids')) {
             $request->validate([
                 'narasumber_ids' => 'required|array',
@@ -227,7 +237,9 @@ class KegiatanController extends Controller
             return back()->with('warning', 'Tidak ada narasumber untuk dicetak.');
         }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.kegiatan.pdf_biodata_narasumber', compact('kegiatan', 'narasumber'));
+        $printDate = \Carbon\Carbon::now();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.kegiatan.pdf_biodata_narasumber', compact('kegiatan', 'narasumber', 'printDate'));
         $pdf->setPaper('a4', 'portrait');
         
         return $pdf->stream('Biodata_Narasumber_' . $kegiatan->id . '.pdf');

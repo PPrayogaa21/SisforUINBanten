@@ -3,6 +3,9 @@
 @section('page-title', 'Pengaturan Profil')
 
 @section('content')
+@php
+    $isNarasumber = auth()->user()->kegiatanSebagaiNarasumber()->exists() || (auth()->user()->biodata && strtoupper(auth()->user()->biodata->ket) === 'NARASUMBER');
+@endphp
 <div class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center gap-4 mb-6">
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
@@ -20,9 +23,27 @@
     </div>
     @endif
 
+    @if(session('error'))
+    <div class="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2">
+        <i class="fas fa-times-circle text-red-500"></i> {{ session('error') }}
+    </div>
+    @endif
+
+    @if($isNarasumber)
+    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-3">
+        <i class="fas fa-info-circle text-amber-500 mt-0.5 text-base"></i>
+        <div>
+            <p class="font-semibold text-slate-800">Mode Lihat-Saja (Read-Only)</p>
+            <p class="text-xs text-amber-700 mt-0.5">Sebagai Narasumber, Anda tidak diperbolehkan mengedit biodata sendiri. Silakan hubungi Administrator jika terdapat perubahan atau pembaruan data profil.</p>
+        </div>
+    </div>
+    @endif
+
     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         @method('PUT')
+
+        <fieldset @if($isNarasumber) disabled class="opacity-85" @endif class="space-y-6">
 
         {{-- Foto Profil --}}
         <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm flex flex-col sm:flex-row gap-6 items-center sm:items-start">
@@ -34,10 +55,12 @@
                         <span class="text-3xl font-bold text-slate-300">{{ strtoupper(substr($biodata->nama_lengkap ?? $user->username ?? 'U', 0, 1)) }}</span>
                     @endif
                 </div>
+                @if(!$isNarasumber)
                 <label for="foto" class="absolute bottom-0 right-0 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-emerald-600 shadow-md transition-colors">
                     <i class="fas fa-camera text-sm"></i>
                 </label>
                 <input type="file" name="foto" id="foto" class="hidden" accept="image/*" onchange="previewImage(this)">
+                @endif
             </div>
             <div class="flex-1 text-center sm:text-left">
                 <h3 class="font-semibold text-slate-800">Foto Profil</h3>
@@ -161,15 +184,24 @@
             </div>
         </div>
 
+        </fieldset>
+
         {{-- Tombol Aksi --}}
         <div class="flex items-center justify-end gap-3 pt-2">
-            <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('dashboard') }}"
-               class="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors">
-                <i class="fas fa-times mr-1"></i> Batal
-            </a>
-            <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all active:scale-95 flex items-center gap-2">
-                <i class="fas fa-save"></i> Simpan Perubahan
-            </button>
+            @if($isNarasumber)
+                <a href="{{ route('dashboard') }}"
+                   class="px-6 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition-colors flex items-center gap-2">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+            @else
+                <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('dashboard') }}"
+                   class="px-6 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors">
+                    <i class="fas fa-times mr-1"></i> Batal
+                </a>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-medium hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transition-all active:scale-95 flex items-center gap-2">
+                    <i class="fas fa-save"></i> Simpan Perubahan
+                </button>
+            @endif
         </div>
     </form>
 </div>

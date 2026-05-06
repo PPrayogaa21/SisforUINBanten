@@ -92,7 +92,7 @@
                 <h3>BIODATA PESERTA</h3>
                 <h3>{{ strtoupper($kegiatan->nama_kegiatan) }}</h3>
                 <h3>UNIVERSITAS ISLAM NEGERI SULTAN MAULANA HASANUDDIN BANTEN</h3>
-                <h3>TAHUN ANGGARAN {{ date('Y') }}</h3>
+                <h3>TAHUN ANGGARAN {{ $printDate->format('Y') }}</h3>
             </div>
 
             <table>
@@ -193,7 +193,7 @@
 
             <div class="clearfix signature-area">
                 <div class="signature-box">
-                    <p>Serang, &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</p>
+                    <p>Serang, {{ $printDate->translatedFormat('d F Y') }}</p>
                     <br><br><br><br>
                     <p style="margin: 0; padding-top: 5px;">(......................................................)</p>
                 </div>

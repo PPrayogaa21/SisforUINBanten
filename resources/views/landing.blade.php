@@ -133,16 +133,10 @@
                      style="min-height: 320px;"
                      onclick="window.location.href='{{ route('kegiatan.show.public', $item) }}'">
 
-                    {{-- Background: photo or gradient --}}
-                    @if($cover)
-                        <img src="{{ asset('storage/' . $cover->file_path) }}"
-                             alt="{{ $item->nama_kegiatan }}"
-                             class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                    @else
-                        <div class="absolute inset-0 bg-gradient-to-br {{ $cardGrad }}">
-                            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px); background-size:28px 28px;"></div>
-                        </div>
-                    @endif
+                    {{-- Background: gradient --}}
+                    <div class="absolute inset-0 bg-gradient-to-br {{ $cardGrad }}">
+                        <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px); background-size:28px 28px;"></div>
+                    </div>
 
                     {{-- Dark gradient overlay from bottom --}}
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10"></div>
@@ -155,11 +149,6 @@
                             </span>
                         </div>
                         <div class="flex items-center gap-2">
-                            @if($item->dokumentasi->count() > 0)
-                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-black/40 backdrop-blur-md border border-white/10 text-white">
-                                <i class="fas fa-images mr-1 text-emerald-400"></i>{{ $item->dokumentasi->count() }}
-                            </span>
-                            @endif
                             @php
                                 $statusColor = ['draft'=>'bg-slate-500/30 text-slate-300','published'=>'bg-blue-500/30 text-blue-300','ongoing'=>'bg-amber-500/30 text-amber-300','completed'=>'bg-emerald-500/30 text-emerald-300','cancelled'=>'bg-red-500/30 text-red-300'];
                                 $sc = $statusColor[$item->status] ?? 'bg-slate-500/30 text-slate-300';
@@ -168,12 +157,10 @@
                         </div>
                     </div>
 
-                    {{-- No-photo icon center --}}
-                    @if(!$cover)
+                    {{-- Center icon --}}
                     <div class="absolute inset-0 flex items-center justify-center">
                         <i class="fas fa-{{ $icon }} text-7xl text-white/10"></i>
                     </div>
-                    @endif
 
                     {{-- Bottom content --}}
                     <div class="absolute bottom-0 left-0 right-0 p-5">
