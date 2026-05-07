@@ -9,7 +9,15 @@
             <h2 class="text-lg font-bold text-slate-800">{{ $kegiatan->nama_kegiatan }}</h2>
             <p class="text-sm text-slate-500">Upload foto dokumentasi kegiatan</p>
         </div>
-        <a href="{{ route('admin.kegiatan.show', $kegiatan) }}" class="text-sm text-emerald-600 font-medium">← Kembali</a>
+        <a href="{{ route('admin.kegiatan.show', $kegiatan) }}"
+        class="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-medium shadow-sm transition">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+
+            Kembali
+        </a>
     </div>
 
     <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
