@@ -63,12 +63,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/kegiatan/{kegiatan}/peserta', [AdminKegiatanController::class, 'addPeserta'])->name('kegiatan.peserta.add');
     Route::delete('/kegiatan/{kegiatan}/peserta/{user}', [AdminKegiatanController::class, 'removePeserta'])->name('kegiatan.peserta.remove');
     Route::patch('/kegiatan/{kegiatan}/peserta/{user}/kehadiran', [AdminKegiatanController::class, 'updateKehadiran'])->name('kegiatan.peserta.kehadiran');
-    Route::post('/kegiatan/{kegiatan}/peserta/cetak-pdf', [AdminKegiatanController::class, 'cetakPdfPeserta'])->name('kegiatan.peserta.cetak-pdf');
+    Route::match(['get', 'post'], '/kegiatan/{kegiatan}/peserta/cetak-pdf', [AdminKegiatanController::class, 'cetakPdfPeserta'])->name('kegiatan.peserta.cetak-pdf');
 
     // Kegiatan - Narasumber
     Route::get('/kegiatan/{kegiatan}/narasumber', [AdminKegiatanController::class, 'narasumberList'])->name('kegiatan.narasumber');
     Route::post('/kegiatan/{kegiatan}/narasumber', [AdminKegiatanController::class, 'addNarasumber'])->name('kegiatan.narasumber.add');
     Route::delete('/kegiatan/{kegiatan}/narasumber/{user}', [AdminKegiatanController::class, 'removeNarasumber'])->name('kegiatan.narasumber.remove');
+    Route::match(['get', 'post'], '/kegiatan/{kegiatan}/narasumber/cetak-pdf', [AdminKegiatanController::class, 'cetakPdfNarasumber'])->name('kegiatan.narasumber.cetak-pdf');
 
     // Kegiatan - Materi
     Route::get('/kegiatan/{kegiatan}/materi', [AdminKegiatanController::class, 'materiIndex'])->name('kegiatan.materi');

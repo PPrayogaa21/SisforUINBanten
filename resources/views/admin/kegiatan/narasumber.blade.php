@@ -49,32 +49,51 @@
     </div>
 
     <div class="rounded-2xl bg-white border border-slate-200/50 shadow-sm overflow-hidden">
-        <table class="w-full text-sm">
-            <thead><tr class="border-b border-slate-100">
-                <th class="text-left px-6 py-4 font-semibold text-slate-600">Nama</th>
-                <th class="text-left px-6 py-4 font-semibold text-slate-600">NIP</th>
-                <th class="text-left px-6 py-4 font-semibold text-slate-600">Topik Materi</th>
-                <th class="text-right px-6 py-4 font-semibold text-slate-600">Aksi</th>
-            </tr></thead>
-            <tbody class="divide-y divide-slate-100">
-                @forelse($kegiatan->narasumber as $n)
-                <tr class="hover:bg-slate-50/50">
-                    <td class="px-6 py-4 font-medium text-slate-800">{{ $n->biodata->nama_lengkap ?? $n->username }}</td>
-                    <td class="px-6 py-4 text-slate-500">{{ $n->biodata->nip ?? '-' }}</td>
-                    <td class="px-6 py-4 text-slate-500">{{ $n->pivot->topik_materi ?? '-' }}</td>
-                    <td class="px-6 py-4 text-right">
-                        <form method="POST" action="{{ route('admin.kegiatan.narasumber.remove', [$kegiatan, $n]) }}" onsubmit="return confirm('Hapus narasumber ini?')">
-                            @csrf @method('DELETE')
-                            <button class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"><i class="fas fa-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr><td colspan="4" class="px-6 py-12 text-center text-slate-400">Belum ada narasumber</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+        <form method="POST" action="{{ route('admin.kegiatan.narasumber.cetak-pdf', $kegiatan) }}" id="formCetakPdf" target="_blank">
+            @csrf
+            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                <h3 class="font-semibold text-slate-800">Daftar Narasumber</h3>
+                <button type="submit" id="btnCetakPdf" class="px-4 py-2 rounded-xl bg-blue-500 text-white text-sm font-medium hover:bg-blue-600 transition-colors shadow-sm" disabled>
+                    <i class="fas fa-print mr-2"></i> Cetak PDF Biodata
+                </button>
+            </div>
+            <table class="w-full text-sm">
+                <thead><tr class="border-b border-slate-100 bg-slate-50/50">
+                    <th class="text-left px-6 py-4 font-semibold text-slate-600 w-12">
+                        <input type="checkbox" id="selectAllNarasumber" class="rounded text-amber-500 focus:ring-amber-500 w-4 h-4 border-slate-300">
+                    </th>
+                    <th class="text-left px-6 py-4 font-semibold text-slate-600">Nama</th>
+                    <th class="text-left px-6 py-4 font-semibold text-slate-600">NIP</th>
+                    <th class="text-left px-6 py-4 font-semibold text-slate-600">Topik Materi</th>
+                    <th class="text-right px-6 py-4 font-semibold text-slate-600">Aksi</th>
+                </tr></thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse($kegiatan->narasumber as $n)
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <input type="checkbox" name="narasumber_ids[]" value="{{ $n->id }}" class="narasumber-checkbox rounded text-amber-500 focus:ring-amber-500 w-4 h-4 border-slate-300">
+                        </td>
+                        <td class="px-6 py-4 font-medium text-slate-800">{{ $n->biodata->nama_lengkap ?? $n->username }}</td>
+                        <td class="px-6 py-4 text-slate-500 font-mono text-xs">{{ $n->biodata->nip ?? '-' }}</td>
+                        <td class="px-6 py-4 text-slate-500">{{ $n->pivot->topik_materi ?? '-' }}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button type="button" onclick="deleteNarasumber('{{ route('admin.kegiatan.narasumber.remove', [$kegiatan, $n]) }}')" class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" class="px-6 py-12 text-center text-slate-400"><i class="fas fa-users text-3xl mb-3 block text-slate-300"></i>Belum ada narasumber</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </form>
     </div>
+
+    <!-- Hidden form for JS submission -->
+    <form id="deleteNarasumberForm" method="POST" class="hidden">
+        @csrf @method('DELETE')
+    </form>
 </div>
 
 @push('scripts')
@@ -82,6 +101,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchUser');
         const userSelect = document.getElementById('userSelect');
+        const selectAllNarasumber = document.getElementById('selectAllNarasumber');
+        const narasumberCheckboxes = document.querySelectorAll('.narasumber-checkbox');
+        const btnCetakPdf = document.getElementById('btnCetakPdf');
         
         if (searchInput && userSelect) {
             searchInput.addEventListener('input', function(e) {
@@ -110,7 +132,45 @@
                 }
             });
         }
+
+        // PDF Checkbox Logic
+        function updateBtnState() {
+            const anyChecked = Array.from(narasumberCheckboxes).some(cb => cb.checked);
+            btnCetakPdf.disabled = !anyChecked;
+            if(anyChecked) {
+                btnCetakPdf.classList.remove('bg-blue-400', 'cursor-not-allowed');
+                btnCetakPdf.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            } else {
+                btnCetakPdf.classList.add('bg-blue-400', 'cursor-not-allowed');
+                btnCetakPdf.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            }
+        }
+
+        if (selectAllNarasumber) {
+            selectAllNarasumber.addEventListener('change', function() {
+                narasumberCheckboxes.forEach(cb => cb.checked = this.checked);
+                updateBtnState();
+            });
+            
+            narasumberCheckboxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const allChecked = Array.from(narasumberCheckboxes).every(c => c.checked);
+                    const someChecked = Array.from(narasumberCheckboxes).some(c => c.checked);
+                    selectAllNarasumber.checked = allChecked;
+                    selectAllNarasumber.indeterminate = someChecked && !allChecked;
+                    updateBtnState();
+                });
+            });
+        }
     });
+
+    function deleteNarasumber(url) {
+        if(confirm('Hapus narasumber ini dari kegiatan?')) {
+            const form = document.getElementById('deleteNarasumberForm');
+            form.action = url;
+            form.submit();
+        }
+    }
 </script>
 @endpush
 @endsection
