@@ -17,10 +17,27 @@ class KegiatanController extends Controller
         CRUD KEGIATAN
     ======================= */
 
-    public function index()
+    public function index(Request $request)
     {
-        ## ini sebelum gue ubah $kegiatan = Kegiatan::latest()->get();
-        $kegiatan = Kegiatan::latest()->paginate(10);;
+        $query = Kegiatan::latest();
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_kegiatan', 'ilike', "%{$search}%")
+                  ->orWhere('tempat', 'ilike', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->jenis);
+        }
+
+        $kegiatan = $query->paginate(10)->withQueryString();
         return view('admin.kegiatan.index', compact('kegiatan'));
     }
 
@@ -84,8 +101,10 @@ class KegiatanController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+                $q->whereHas('biodata', function($bq) use ($search) {
+                    $bq->where('nama_lengkap', 'ilike', "%{$search}%")
+                       ->orWhere('nip', 'ilike', "%{$search}%");
+                })->orWhere('username', 'ilike', "%{$search}%");
             });
         }
 
@@ -179,8 +198,10 @@ class KegiatanController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+                $q->whereHas('biodata', function($bq) use ($search) {
+                    $bq->where('nama_lengkap', 'ilike', "%{$search}%")
+                       ->orWhere('nip', 'ilike', "%{$search}%");
+                })->orWhere('username', 'ilike', "%{$search}%");
             });
         }
 

@@ -33,6 +33,11 @@
         <button type="submit" class="px-5 py-2.5 rounded-xl bg-slate-800 text-white text-sm font-medium hover:bg-slate-700 transition-colors">
             <i class="fas fa-search mr-1"></i> Filter
         </button>
+        @if(request('search') || request('status') || request('jenis'))
+        <a href="{{ route('admin.kegiatan.index') }}" class="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-medium hover:bg-slate-200 transition-colors flex items-center justify-center">
+            <i class="fas fa-undo mr-1"></i> Reset
+        </a>
+        @endif
     </form>
 </div>
 

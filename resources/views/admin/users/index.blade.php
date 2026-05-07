@@ -85,19 +85,25 @@
                                 {{ ucfirst($user->role) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-right space-x-2">
-                            <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-amber-500 hover:bg-amber-50 transition-colors" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            @if(auth()->id() !== $user->id)
-                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus user ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-500 hover:bg-red-50 transition-colors" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                            @endif
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{{ route('admin.users.edit', $user) }}" 
+                                   class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 transition-all text-xs font-semibold border border-amber-100" 
+                                   title="Edit User">
+                                    <i class="fas fa-edit text-xs"></i> Edit
+                                </a>
+                                @if(auth()->id() !== $user->id)
+                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus user ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all text-xs font-semibold border border-red-100" 
+                                            title="Hapus User">
+                                        <i class="fas fa-trash text-xs"></i> Hapus
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @empty

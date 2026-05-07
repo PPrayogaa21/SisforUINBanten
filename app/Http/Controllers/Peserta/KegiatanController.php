@@ -27,7 +27,15 @@ class KegiatanController extends Controller
             abort(403, 'Anda bukan peserta kegiatan ini.');
         }
 
-        $kegiatan->load('materi.uploader', 'narasumber.biodata', 'dokumentasi', 'dokumen', 'kuesioner');
+        $kegiatan->load([
+            'materi.uploader', 
+            'narasumber.biodata', 
+            'dokumentasi', 
+            'dokumen' => function($query) use ($user) {
+                $query->where('target_user_id', $user->id);
+            }, 
+            'kuesioner'
+        ]);
 
         return view('peserta.kegiatan.show', compact('kegiatan'));
     }
@@ -45,9 +53,16 @@ class KegiatanController extends Controller
     
     public function downloadDokumen(Kegiatan $kegiatan, \App\Models\KegiatanDokumen $dokumen)
     {
-        // Pastikan user adalah peserta kegiatan ini
-        if (!$kegiatan->peserta()->where('user_id', auth()->id())->exists()) {
-            abort(403, 'Anda bukan peserta kegiatan ini.');
+        $user = auth()->user();
+        
+        // Pastikan dokumen milik kegiatan ini
+        if ($dokumen->kegiatan_id != $kegiatan->id) {
+            abort(404, 'Dokumen tidak ditemukan pada kegiatan ini.');
+        }
+
+        // Cek akses: User harus target recipient dokumen ini
+        if ($dokumen->target_user_id != $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
         }
 
         if (!Storage::disk('public')->exists($dokumen->file_path)) {

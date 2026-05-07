@@ -185,7 +185,7 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <a href="{{ asset('storage/' . $m->file_path) }}" target="_blank" class="w-10 h-10 rounded-full bg-slate-50 text-slate-600 flex items-center justify-center shrink-0 hover:bg-slate-200 transition-colors border border-slate-200" title="Lihat Materi">
+                            <a href="{{ Storage::disk('public')->url($m->file_path) }}" target="_blank" class="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 hover:bg-slate-200 transition-colors border border-slate-200" title="Lihat Materi">
                                 <i class="fas fa-eye text-sm"></i>
                             </a>
                             <a href="{{ route('peserta.materi.download', $m) }}" class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 hover:bg-blue-600 hover:text-white transition-colors border border-blue-100" title="Download Materi">
@@ -221,9 +221,14 @@
                             <p class="text-[11px] font-semibold text-slate-400 uppercase mt-1 tracking-wider">{{ str_replace('_', ' ', $doc->jenis) }}</p>
                         </div>
                     </div>
-                    <a href="{{ route('peserta.dokumen.download', [$kegiatan, $doc]) }}" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center shrink-0 hover:bg-slate-700 hover:text-white transition-colors border border-slate-300" title="Download Dokumen">
-                        <i class="fas fa-download text-sm"></i>
-                    </a>
+                    <div class="flex gap-2">
+                        <a href="{{ Storage::disk('public')->url($doc->file_path) }}" target="_blank" class="w-10 h-10 rounded-full bg-white text-slate-600 flex items-center justify-center shrink-0 hover:bg-slate-700 hover:text-white transition-colors border border-slate-300" title="Lihat Dokumen">
+                            <i class="fas fa-eye text-sm"></i>
+                        </a>
+                        <a href="{{ route('peserta.dokumen.download', [$kegiatan, $doc]) }}" class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center shrink-0 hover:bg-slate-700 hover:text-white transition-colors border border-slate-300" title="Download Dokumen">
+                            <i class="fas fa-download text-sm"></i>
+                        </a>
+                    </div>
                 </div>
                 @endforeach
             </div>

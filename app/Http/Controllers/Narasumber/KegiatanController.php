@@ -26,7 +26,14 @@ class KegiatanController extends Controller
             abort(403);
         }
 
-        $kegiatan->load('peserta.biodata', 'materi.uploader', 'dokumentasi');
+        $kegiatan->load([
+            'peserta.biodata', 
+            'materi.uploader', 
+            'dokumentasi',
+            'dokumen' => function($query) use ($user) {
+                $query->where('target_user_id', $user->id);
+            }
+        ]);
 
         return view('narasumber.kegiatan.show', compact('kegiatan'));
     }
@@ -58,5 +65,26 @@ class KegiatanController extends Controller
         ]);
     
         return back()->with('success', 'Materi berhasil diupload.');
+    }
+
+    public function downloadDokumen(Kegiatan $kegiatan, \App\Models\KegiatanDokumen $dokumen)
+    {
+        $user = auth()->user();
+        
+        // Pastikan dokumen milik kegiatan ini
+        if ($dokumen->kegiatan_id != $kegiatan->id) {
+            abort(404, 'Dokumen tidak ditemukan pada kegiatan ini.');
+        }
+
+        // Cek akses: User harus target recipient dokumen ini
+        if ($dokumen->target_user_id != $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
+        }
+
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($dokumen->file_path)) {
+            abort(404, 'File dokumen tidak ditemukan.');
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->download($dokumen->file_path, $dokumen->judul . '.' . pathinfo($dokumen->file_path, PATHINFO_EXTENSION));
     }
 }

@@ -60,7 +60,14 @@
                     <i class="fas fa-file-lines text-blue-500"></i>
                     <div><p class="text-sm font-medium text-slate-700">{{ $m->judul }}</p><p class="text-xs text-slate-400">{{ strtoupper($m->file_type) }} · {{ $m->file_size_formatted }} · {{ $m->uploader->biodata->nama_lengkap ?? $m->uploader->username }}</p></div>
                 </div>
-                <a href="{{ Storage::disk('public')->url($m->file_path) }}" target="_blank" class="text-blue-500 hover:text-blue-700"><i class="fas fa-download"></i></a>
+                <div class="flex items-center gap-2">
+                    <a href="{{ Storage::disk('public')->url($m->file_path) }}" target="_blank" class="w-8 h-8 rounded-lg bg-white text-slate-400 hover:text-blue-500 flex items-center justify-center border border-slate-200 transition-all shadow-sm" title="Lihat">
+                        <i class="fas fa-eye text-xs"></i>
+                    </a>
+                    <a href="{{ Storage::disk('public')->url($m->file_path) }}" target="_blank" class="w-8 h-8 rounded-lg bg-white text-slate-400 hover:text-emerald-500 flex items-center justify-center border border-slate-200 transition-all shadow-sm" title="Download">
+                        <i class="fas fa-download text-xs"></i>
+                    </a>
+                </div>
             </div>
             @endforeach
         </div>
@@ -80,6 +87,36 @@
             @endforelse
         </div>
     </div>
+
+    <!-- Dokumen Resmi -->
+    @if($kegiatan->dokumen->count() > 0)
+    <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
+        <h3 class="font-semibold text-slate-800 mb-4"><i class="fas fa-file-signature text-amber-500 mr-2"></i>Dokumen Resmi</h3>
+        <div class="space-y-3">
+            @foreach($kegiatan->dokumen as $doc)
+            <div class="flex items-center justify-between p-3.5 rounded-2xl border border-slate-100 bg-slate-50 group hover:bg-white hover:border-amber-200 hover:shadow-sm transition-all">
+                <div class="flex items-center gap-3.5 overflow-hidden pr-2">
+                    <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center shrink-0 shadow-sm text-slate-500">
+                        <i class="fas fa-file-contract text-xl"></i>
+                    </div>
+                    <div class="truncate">
+                        <p class="text-sm font-bold text-slate-700 truncate" title="{{ $doc->judul }}">{{ $doc->judul }}</p>
+                        <p class="text-[11px] font-semibold text-slate-400 uppercase mt-1 tracking-wider">{{ str_replace('_', ' ', $doc->jenis) }}</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="{{ Storage::disk('public')->url($doc->file_path) }}" target="_blank" class="w-10 h-10 rounded-full bg-white text-slate-600 flex items-center justify-center shrink-0 hover:bg-amber-600 hover:text-white transition-colors border border-slate-300" title="Lihat Dokumen">
+                        <i class="fas fa-eye text-sm"></i>
+                    </a>
+                    <a href="{{ route('narasumber.dokumen.download', [$kegiatan, $doc]) }}" class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 hover:bg-amber-600 hover:text-white transition-colors border border-amber-100" title="Download Dokumen">
+                        <i class="fas fa-download text-sm"></i>
+                    </a>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 </div>
 
 @if($kegiatan->latitude && $kegiatan->longitude)

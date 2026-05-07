@@ -18,9 +18,9 @@ class UserController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->whereHas('biodata', function($bq) use ($search) {
-                    $bq->where('nama_lengkap', 'like', "%{$search}%")
-                       ->orWhere('email', 'like', "%{$search}%");
-                })->orWhere('username', 'like', "%{$search}%");
+                    $bq->where('nama_lengkap', 'ilike', "%{$search}%")
+                       ->orWhere('email', 'ilike', "%{$search}%");
+                })->orWhere('username', 'ilike', "%{$search}%");
             });
         }
 
