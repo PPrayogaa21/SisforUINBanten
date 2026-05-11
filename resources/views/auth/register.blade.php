@@ -2,69 +2,118 @@
 @section('title', 'Registrasi')
 
 @section('content')
-<h2 class="text-xl font-bold text-white mb-1">Buat Akun Baru</h2>
-<p class="text-slate-400 text-sm mb-6">Daftar untuk mengakses sistem kegiatan</p>
 
-<form method="POST" action="{{ route('register') }}" class="space-y-4">
+{{-- Title --}}
+<div style="margin-bottom:28px;">
+    <h1 style="font-size:28px;font-weight:900;color:#0f172a;letter-spacing:-.02em;margin:0 0 6px;">Buat Akun</h1>
+    <p style="font-size:14px;color:#64748b;margin:0;">Daftarkan diri Anda untuk mengakses sistem kegiatan</p>
+</div>
+
+<form method="POST" action="{{ route('register') }}" style="display:flex;flex-direction:column;gap:16px;">
     @csrf
 
+    {{-- Username --}}
     <div>
-        <label class="block text-sm font-medium text-slate-300 mb-1.5">Username / NIP</label>
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-id-card"></i></span>
-            <input type="text" name="username" value="{{ old('username') }}" required
-                class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all"
-                placeholder="Username / NIP">
+        <label for="reg-username" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">
+            Username / NIP
+        </label>
+        <div class="input-wrap">
+            <i class="fas fa-id-card input-icon"></i>
+            <input type="text" name="username" id="reg-username"
+                   value="{{ old('username') }}" required
+                   class="auth-input"
+                   placeholder="Username atau NIP Anda">
         </div>
     </div>
 
+    {{-- Nama Lengkap --}}
     <div>
-        <label class="block text-sm font-medium text-slate-300 mb-1.5">Nama Lengkap</label>
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-user"></i></span>
-            <input type="text" name="nama" value="{{ old('nama') }}" required
-                class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all"
-                placeholder="Nama lengkap Anda">
+        <label for="reg-nama" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">
+            Nama Lengkap
+        </label>
+        <div class="input-wrap">
+            <i class="fas fa-user input-icon"></i>
+            <input type="text" name="nama" id="reg-nama"
+                   value="{{ old('nama') }}" required
+                   class="auth-input"
+                   placeholder="Nama lengkap Anda">
         </div>
     </div>
 
+    {{-- Email --}}
     <div>
-        <label class="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-envelope"></i></span>
-            <input type="email" name="email" value="{{ old('email') }}" required
-                class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all"
-                placeholder="email@example.com">
+        <label for="reg-email" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">
+            Email
+        </label>
+        <div class="input-wrap">
+            <i class="fas fa-envelope input-icon"></i>
+            <input type="email" name="email" id="reg-email"
+                   value="{{ old('email') }}" required
+                   class="auth-input"
+                   placeholder="email@example.com">
         </div>
     </div>
 
+    {{-- Password --}}
     <div>
-        <label class="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-lock"></i></span>
-            <input type="password" name="password" required
-                class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all"
-                placeholder="Minimal 8 karakter">
+        <label for="reg-password" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">
+            Password
+        </label>
+        <div class="input-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" name="password" id="reg-password" required
+                   class="auth-input" style="padding-right:44px;"
+                   placeholder="Minimal 8 karakter">
+            <button type="button" class="input-toggle" onclick="togglePw('reg-password','pw1-icon')">
+                <i class="fas fa-eye" id="pw1-icon"></i>
+            </button>
         </div>
     </div>
 
+    {{-- Konfirmasi Password --}}
     <div>
-        <label class="block text-sm font-medium text-slate-300 mb-1.5">Konfirmasi Password</label>
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-lock"></i></span>
-            <input type="password" name="password_confirmation" required
-                class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 transition-all"
-                placeholder="Ulangi password">
+        <label for="reg-password-confirm" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">
+            Konfirmasi Password
+        </label>
+        <div class="input-wrap">
+            <i class="fas fa-shield-check input-icon"></i>
+            <input type="password" name="password_confirmation" id="reg-password-confirm" required
+                   class="auth-input" style="padding-right:44px;"
+                   placeholder="Ulangi password">
+            <button type="button" class="input-toggle" onclick="togglePw('reg-password-confirm','pw2-icon')">
+                <i class="fas fa-eye" id="pw2-icon"></i>
+            </button>
         </div>
     </div>
 
-    <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 transition-all duration-200">
-        <i class="fas fa-user-plus mr-2"></i> Daftar
+    {{-- Submit --}}
+    <button type="submit" class="auth-btn" style="margin-top:6px;">
+        <i class="fas fa-user-plus"></i>
+        Buat Akun Sekarang
     </button>
 </form>
 
-<p class="text-center text-sm text-slate-400 mt-6">
-    Sudah punya akun?
-    <a href="{{ route('login') }}" class="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">Masuk di sini</a>
-</p>
+{{-- Divider --}}
+<div class="auth-divider"><span>atau</span></div>
+
+{{-- Login link --}}
+<div style="text-align:center;">
+    <p style="font-size:14px;color:#64748b;margin:0;">
+        Sudah punya akun?
+        <a href="{{ route('login') }}"
+           style="color:#059669;font-weight:700;text-decoration:none;margin-left:4px;transition:color .15s;"
+           onmouseover="this.style.color='#047857'" onmouseout="this.style.color='#059669'">
+            Masuk di sini &rarr;
+        </a>
+    </p>
+</div>
+
+<script>
+function togglePw(fieldId, iconId) {
+    const f = document.getElementById(fieldId);
+    const i = document.getElementById(iconId);
+    if (f.type === 'password') { f.type = 'text'; i.classList.replace('fa-eye','fa-eye-slash'); }
+    else { f.type = 'password'; i.classList.replace('fa-eye-slash','fa-eye'); }
+}
+</script>
 @endsection

@@ -2,58 +2,89 @@
 @section('title', 'Login')
 
 @section('content')
-<h2 class="text-xl font-bold text-white mb-1">Selamat Datang</h2>
-<p class="text-slate-400 text-sm mb-6">Masuk ke akun SITSFOR Anda</p>
 
-<form method="POST" action="{{ route('login') }}" class="space-y-5">
+{{-- Title --}}
+<div style="margin-bottom:28px;">
+    <h1 style="font-size:28px;font-weight:900;color:#0f172a;letter-spacing:-.02em;margin:0 0 6px;">Masuk</h1>
+    <p style="font-size:14px;color:#64748b;margin:0;">Masukkan kredensial akun SITSFOR Anda</p>
+</div>
+
+<form method="POST" action="{{ route('login') }}" style="display:flex;flex-direction:column;gap:18px;">
     @csrf
 
+    {{-- Username --}}
     <div>
-        <label class="block text-sm font-medium text-slate-300 mb-1.5">Username / NIP</label>
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-id-card"></i></span>
-            <input type="text" name="username" value="{{ old('username') }}" required autofocus
-                class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 transition-all"
-                placeholder="Masukkan Username atau NIP Anda">
+        <label for="login-username" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">
+            Username / NIP
+        </label>
+        <div class="input-wrap">
+            <i class="fas fa-id-card input-icon"></i>
+            <input type="text" name="username" id="login-username"
+                   value="{{ old('username') }}" required autofocus
+                   class="auth-input"
+                   placeholder="Masukkan username atau NIP">
         </div>
     </div>
 
+    {{-- Password --}}
     <div>
-        <label class="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500"><i class="fas fa-lock"></i></span>
-            <input type="password" name="password" required id="password-field"
-                class="w-full pl-10 pr-12 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 transition-all"
-                placeholder="Masukkan password">
-            <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-slate-300">
-                <i class="fas fa-eye" id="password-toggle-icon"></i>
+        <label for="password-field" style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:8px;">
+            Password
+        </label>
+        <div class="input-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input type="password" name="password" id="password-field" required
+                   class="auth-input" style="padding-right:44px;"
+                   placeholder="Masukkan password">
+            <button type="button" class="input-toggle" onclick="togglePw('password-field','pw-icon')">
+                <i class="fas fa-eye" id="pw-icon"></i>
             </button>
         </div>
     </div>
 
-    <div class="flex items-center justify-between">
-        <label class="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" name="remember" class="w-4 h-4 rounded border-white/20 bg-white/5 text-emerald-500 focus:ring-emerald-400/50">
-            <span class="text-sm text-slate-400">Ingat saya</span>
+    {{-- Remember --}}
+    <div style="display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" name="remember" id="remember-me"
+               style="width:16px;height:16px;border-radius:5px;border:1.5px solid #cbd5e1;cursor:pointer;accent-color:#10b981;">
+        <label for="remember-me" style="font-size:13px;color:#64748b;cursor:pointer;user-select:none;">
+            Ingat saya
         </label>
     </div>
 
-    <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:from-emerald-400 hover:to-teal-400 transform hover:-translate-y-0.5 transition-all duration-200">
-        <i class="fas fa-right-to-bracket mr-2"></i> Masuk
+    {{-- Submit --}}
+    <button type="submit" class="auth-btn" style="margin-top:6px;">
+        <i class="fas fa-right-to-bracket"></i>
+        Masuk ke Dashboard
     </button>
 </form>
 
-<p class="text-center text-sm text-slate-400 mt-6">
-    Belum punya akun?
-    <a href="{{ route('register') }}" class="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">Daftar di sini</a>
-</p>
+{{-- Divider --}}
+<div class="auth-divider"><span>atau</span></div>
+
+{{-- Register link --}}
+<div style="text-align:center;">
+    <p style="font-size:14px;color:#64748b;margin:0;">
+        Belum punya akun?
+        <a href="{{ route('register') }}"
+           style="color:#059669;font-weight:700;text-decoration:none;margin-left:4px;transition:color .15s;"
+           onmouseover="this.style.color='#047857'" onmouseout="this.style.color='#059669'">
+            Daftar di sini &rarr;
+        </a>
+    </p>
+</div>
+
+{{-- Security note --}}
+<div class="security-note">
+    <i class="fas fa-shield-halved" style="color:#10b981;margin-top:1px;flex-shrink:0;"></i>
+    <span>Koneksi Anda dilindungi. Data login Anda tidak akan pernah dibagikan kepada pihak ketiga.</span>
+</div>
 
 <script>
-function togglePassword() {
-    const field = document.getElementById('password-field');
-    const icon = document.getElementById('password-toggle-icon');
-    if (field.type === 'password') { field.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
-    else { field.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+function togglePw(fieldId, iconId) {
+    const f = document.getElementById(fieldId);
+    const i = document.getElementById(iconId);
+    if (f.type === 'password') { f.type = 'text'; i.classList.replace('fa-eye','fa-eye-slash'); }
+    else { f.type = 'password'; i.classList.replace('fa-eye-slash','fa-eye'); }
 }
 </script>
 @endsection
