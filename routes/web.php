@@ -116,5 +116,7 @@ Route::middleware(['auth', 'check.biodata'])->prefix('narasumber')->name('narasu
     Route::get('/kegiatan', [NarasumberKegiatanController::class, 'index'])->name('kegiatan.index');
     Route::get('/kegiatan/{kegiatan}', [NarasumberKegiatanController::class, 'show'])->name('kegiatan.show');
     Route::post('/kegiatan/{kegiatan}/materi', [NarasumberKegiatanController::class, 'uploadMateri'])->name('kegiatan.materi.upload');
+    Route::delete('/kegiatan/{kegiatan}/materi/{materi}', [NarasumberKegiatanController::class, 'deleteMateri'])->name('kegiatan.materi.delete');
     Route::get('/kegiatan/{kegiatan}/dokumen/{dokumen}/download', [NarasumberKegiatanController::class, 'downloadDokumen'])->name('dokumen.download');
+    Route::get('/dokumentasi/{dokumentasi}/download', [NarasumberKegiatanController::class, 'downloadDokumentasi'])->name('dokumentasi.download');
 });

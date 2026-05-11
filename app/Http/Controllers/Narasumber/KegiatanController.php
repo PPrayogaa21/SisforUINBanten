@@ -87,4 +87,43 @@ class KegiatanController extends Controller
 
         return \Illuminate\Support\Facades\Storage::disk('public')->download($dokumen->file_path, $dokumen->judul . '.' . pathinfo($dokumen->file_path, PATHINFO_EXTENSION));
     }
+
+    public function deleteMateri(Kegiatan $kegiatan, KegiatanMateri $materi)
+    {
+        $user = auth()->user();
+
+        // Cek akses kegiatan
+        if (!$kegiatan->narasumber()->where('user_id', $user->id)->exists()) {
+            abort(403);
+        }
+
+        // Pastikan materi ini milik kegiatan ini
+        if ($materi->kegiatan_id != $kegiatan->id) {
+            abort(404);
+        }
+
+        // HANYA bisa hapus jika uploader-nya adalah dirinya sendiri
+        if ($materi->uploaded_by != $user->id) {
+            abort(403, 'Anda hanya memiliki izin untuk menghapus materi Anda sendiri.');
+        }
+
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($materi->file_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($materi->file_path);
+        }
+
+        $materi->delete();
+
+        return back()->with('success', 'Materi berhasil dihapus.');
+    }
+
+    public function downloadDokumentasi($id)
+    {
+        $dokumentasi = \App\Models\KegiatanDokumentasi::findOrFail($id);
+    
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($dokumentasi->file_path)) {
+            abort(404, 'File foto tidak ditemukan.');
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->download($dokumentasi->file_path);
+    }
 }
