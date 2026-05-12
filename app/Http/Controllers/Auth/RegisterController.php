@@ -31,6 +31,7 @@ class RegisterController extends Controller
 
         $user = User::create([
             'username' => $validated['username'],
+            'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => 'user',
             'biodata_verified' => false,
@@ -48,11 +49,7 @@ class RegisterController extends Controller
             'tgl_bergabung' => now()->format('Y-m-d'),
         ]);
 
-        Auth::login($user);
-        
-        session(['just_registered' => true]);
-
-        return redirect()->route('biodata.create')
-            ->with('info', 'Registrasi berhasil! Silakan lengkapi biodata Anda.');
+        return redirect()->route('login')
+            ->with('success', 'Registrasi berhasil! Akun Anda sedang menunggu persetujuan Admin.');
     }
 }

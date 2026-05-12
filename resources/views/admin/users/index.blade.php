@@ -52,6 +52,7 @@
                         <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Jabatan & Bagian</th>
                         <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
                         <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">Status</th>
                         <th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -85,15 +86,29 @@
                                 {{ ucfirst($user->role) }}
                             </span>
                         </td>
+                        <td class="px-6 py-4 text-center">
+                            @if($user->account_status === 'pending')
+                                <span class="px-3 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-700">Pending</span>
+                            @elseif($user->account_status === 'approved')
+                                <span class="px-3 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-700">Approved</span>
+                            @elseif($user->account_status === 'rejected')
+                                <span class="px-3 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">Rejected</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4">
-                            <div class="flex items-center justify-end gap-2">
+                            <div class="flex items-center justify-end gap-2 flex-wrap">
+                                @if($user->account_status === 'pending')
+                                <a href="{{ route('admin.users.approval') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 transition-all text-xs font-semibold border border-amber-100" title="Menunggu Approval">
+                                    <i class="fas fa-clock"></i> Review
+                                </a>
+                                @endif
                                 <a href="{{ route('admin.users.edit', $user) }}" 
                                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 transition-all text-xs font-semibold border border-amber-100" 
                                    title="Edit User">
                                     <i class="fas fa-edit text-xs"></i> Edit
                                 </a>
                                 @if(auth()->id() !== $user->id)
-                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus user ini?');">
+                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block form-delete">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
@@ -124,4 +139,35 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.form-delete');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Hapus User?',
+                    text: "Akun ini akan dihapus secara permanen dari sistem.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-3xl font-sans',
+                        confirmButton: 'rounded-xl px-5 py-2.5 font-bold text-sm',
+                        cancelButton: 'rounded-xl px-5 py-2.5 font-bold text-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) this.submit();
+                });
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

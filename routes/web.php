@@ -26,6 +26,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register']);
+
+    // Password Reset Routes
+    Route::get('password/reset', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [\App\Http\Controllers\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [\App\Http\Controllers\Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [\App\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->name('password.update');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
@@ -37,7 +43,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
     Route::get('/biodata', [BiodataController::class, 'create'])->name('biodata.create');
     Route::post('/biodata', [BiodataController::class, 'store'])->name('biodata.store');
 
-   
+    // Join Kegiatan
+    Route::post('/kegiatan/{kegiatan}/join', [\App\Http\Controllers\Peserta\KegiatanController::class, 'join'])->name('kegiatan.join');
 
     // Profile
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
@@ -53,7 +60,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // User Management
+    Route::get('/users/approval', [AdminUserController::class, 'approvalIndex'])->name('users.approval');
     Route::resource('users', AdminUserController::class)->except(['show']);
+    Route::patch('/users/{user}/approve', [AdminUserController::class, 'approve'])->name('users.approve');
+    Route::patch('/users/{user}/reject', [AdminUserController::class, 'reject'])->name('users.reject');
 
     // Kegiatan CRUD
     Route::resource('kegiatan', AdminKegiatanController::class);
@@ -104,6 +114,7 @@ Route::middleware(['auth', 'check.biodata'])->prefix('peserta')->name('peserta.'
     #route absenn yg di tambahin
     Route::post('/kegiatan/{kegiatan}/absen', [PesertaKegiatanController::class, 'absen'])->name('kegiatan.absen');
     Route::get('/materi/{materi}/download', [PesertaKegiatanController::class, 'downloadMateri'])->name('materi.download');
+    Route::get('/kegiatan/{kegiatan}/dokumen/{dokumen}/view', [PesertaKegiatanController::class, 'viewDokumen'])->name('dokumen.view');
     Route::get('/kegiatan/{kegiatan}/dokumen/{dokumen}/download', [PesertaKegiatanController::class, 'downloadDokumen'])->name('dokumen.download');
     Route::get('/dokumentasi/{dokumentasi}/download', [PesertaKegiatanController::class, 'downloadDokumentasi'])->name('dokumentasi.download');
     Route::get('/kegiatan/{kegiatan}/kuesioner/{kuesioner}', [PesertaKuesionerController::class, 'fill'])->name('kuesioner.fill');

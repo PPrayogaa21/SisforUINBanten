@@ -35,8 +35,7 @@ class KuesionerController extends Controller
     {
         $request->validate([
             'pertanyaan' => 'required|string',
-            'tipe' => 'required|in:rating,text,pilihan_ganda',
-            'opsi' => 'nullable|array',
+            'tipe' => 'required|in:rating,text',
         ]);
 
         $maxUrutan = $kuesioner->pertanyaan()->max('urutan') ?? 0;

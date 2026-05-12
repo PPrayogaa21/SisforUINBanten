@@ -31,7 +31,7 @@
             <h3 class="font-semibold text-slate-800">{{ $q->judul }}</h3>
             <div class="flex gap-2">
                 <a href="{{ route('admin.kuesioner.hasil', $q) }}" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-xs font-medium hover:bg-blue-100">Hasil ({{ $q->responses->count() }})</a>
-                <form method="POST" action="{{ route('admin.kuesioner.destroy', $q) }}" onsubmit="return confirm('Hapus kuesioner ini?')">
+                <form method="POST" action="{{ route('admin.kuesioner.destroy', $q) }}" class="form-delete">
                     @csrf @method('DELETE')
                     <button class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-medium hover:bg-red-100">Hapus</button>
                 </form>
@@ -43,7 +43,7 @@
             @foreach($q->pertanyaan as $i => $p)
             <div class="p-3 rounded-lg bg-slate-50 flex items-center justify-between">
                 <span class="text-sm text-slate-700">{{ $i + 1 }}. {{ $p->pertanyaan }} <span class="text-xs text-slate-400">({{ $p->tipe }})</span></span>
-                <form method="POST" action="{{ route('admin.pertanyaan.delete', $p) }}">
+                <form method="POST" action="{{ route('admin.pertanyaan.delete', $p) }}" class="form-delete-item">
                     @csrf @method('DELETE')
                     <button class="text-slate-400 hover:text-red-500"><i class="fas fa-times"></i></button>
                 </form>
@@ -58,7 +58,6 @@
             <select name="tipe" class="px-3 py-2 rounded-lg border border-slate-200 text-sm">
                 <option value="rating">Rating (1-5)</option>
                 <option value="text">Teks</option>
-                <option value="pilihan_ganda">Pilihan Ganda</option>
             </select>
             <button type="submit" class="px-4 py-2 rounded-lg bg-slate-800 text-white text-sm font-medium hover:bg-slate-700">Tambah</button>
         </form>
@@ -67,4 +66,59 @@
     <div class="text-center py-12 text-slate-400">Belum ada kuesioner</div>
     @endforelse
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.form-delete');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Hapus Kuesioner?',
+                    text: "Seluruh data respons kuesioner ini akan ikut terhapus.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-3xl font-sans',
+                        confirmButton: 'rounded-xl px-5 py-2.5 font-bold text-sm',
+                        cancelButton: 'rounded-xl px-5 py-2.5 font-bold text-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) this.submit();
+                });
+            });
+        });
+
+        const deleteItemForms = document.querySelectorAll('.form-delete-item');
+        deleteItemForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Hapus Pertanyaan?',
+                    text: "Pertanyaan ini akan dihapus dari kuesioner.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Hapus',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-2xl font-sans',
+                        confirmButton: 'rounded-xl px-4 py-2 font-bold text-xs',
+                        cancelButton: 'rounded-xl px-4 py-2 font-bold text-xs'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) this.submit();
+                });
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

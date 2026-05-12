@@ -54,6 +54,7 @@ class KegiatanController extends Controller
             'waktu_mulai' => 'required|date',
             'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
             'tempat' => 'required|string|max:255',
+            'link_maps' => 'nullable|url',
             'status' => 'required|in:draft,published',
         ]);
 
@@ -77,6 +78,16 @@ class KegiatanController extends Controller
 
     public function update(Request $request, Kegiatan $kegiatan)
     {
+        $request->validate([
+            'nama_kegiatan' => 'required|string|max:255',
+            'jenis' => 'required|in:rapat,seminar,pelatihan,workshop,lainnya',
+            'waktu_mulai' => 'required|date',
+            'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
+            'tempat' => 'required|string|max:255',
+            'link_maps' => 'nullable|url',
+            'status' => 'required|in:draft,published',
+        ]);
+
         $kegiatan->update($request->all());
 
         return redirect()->route('admin.kegiatan.index')
@@ -386,7 +397,12 @@ class KegiatanController extends Controller
 
     public function deleteDokumen(Kegiatan $kegiatan, KegiatanDokumen $dokumen)
     {
-        if (Storage::disk('public')->exists($dokumen->file_path)) {
+        // Cek apakah ada record lain yang menggunakan file yang sama
+        $otherDocsCount = KegiatanDokumen::where('file_path', $dokumen->file_path)
+            ->where('id', '!=', $dokumen->id)
+            ->count();
+
+        if ($otherDocsCount === 0 && Storage::disk('public')->exists($dokumen->file_path)) {
             Storage::disk('public')->delete($dokumen->file_path);
         }
         

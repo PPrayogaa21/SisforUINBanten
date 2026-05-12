@@ -39,32 +39,46 @@
         
         <div class="w-full relative">
             
-            @php $cover = $kegiatan->dokumentasi->first(); @endphp
-            
-            <!-- Cover Section -->
-            @if($cover)
-            <div class="w-full relative h-[250px] sm:h-[300px] md:h-[350px] lg:h-[400px] overflow-hidden">
-                <img src="{{ asset('storage/'.$cover->file_path) }}" class="w-full h-full object-cover object-center" alt="Cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent pointer-events-none"></div>
-            </div>
-            @else
-            <div class="w-full h-[40vh] relative bg-gradient-to-br from-emerald-900/30 to-slate-900">
+            <!-- Header Placeholder (No Image) -->
+            <div class="w-full h-[30vh] sm:h-[35vh] relative bg-gradient-to-br from-emerald-900/30 to-slate-900">
                 <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg==')] opacity-20"></div>
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
             </div>
-            @endif
 
             <!-- Content Area -->
-            <div class="max-w-7xl mx-auto px-6 lg:px-8 pb-20 relative {{ $cover ? '-mt-32 sm:-mt-48' : '-mt-24 sm:-mt-32' }} z-10">
+            <div class="max-w-7xl mx-auto px-6 lg:px-8 pb-20 relative -mt-20 sm:-mt-24 z-10">
                 
                 <!-- Badges -->
-                <div class="flex flex-wrap items-center gap-3 mb-6">
-                    <span class="px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
-                        <i class="fas fa-calendar-check mr-1.5"></i> {{ ucfirst($kegiatan->jenis) }}
-                    </span>
-                    <span class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-slate-200 border border-white/10 backdrop-blur-md">
-                        {{ ucfirst($kegiatan->status) }}
-                    </span>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                    <div class="flex gap-3">
+                        <span class="px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-lg shadow-emerald-500/30">
+                            <i class="fas fa-calendar-check mr-1.5"></i> {{ ucfirst($kegiatan->jenis) }}
+                        </span>
+                        <span class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-slate-200 border border-white/10 backdrop-blur-md">
+                            {{ ucfirst($kegiatan->status) }}
+                        </span>
+                    </div>
+
+                    @auth
+                        @php
+                            $user = auth()->user();
+                            $isPeserta = $kegiatan->peserta()->where('user_id', $user->id)->exists();
+                        @endphp
+                        @if($user->role === 'peserta' && in_array($kegiatan->status, ['published', 'ongoing']))
+                            @if($isPeserta)
+                                <a href="{{ route('peserta.kegiatan.show', $kegiatan->id) }}" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg">Lihat Dashboard Kegiatan</a>
+                            @else
+                                @if($user->biodata_verified)
+                                    <form action="{{ route('kegiatan.join', $kegiatan->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg">Join Kegiatan</button>
+                                    </form>
+                                @else
+                                    <button onclick="document.getElementById('biodata-modal').classList.remove('hidden')" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold rounded-xl transition-all shadow-lg">Join Kegiatan</button>
+                                @endif
+                            @endif
+                        @endif
+                    @endauth
                 </div>
 
                 <!-- Title -->
@@ -105,9 +119,25 @@
                         <div>
                             <p class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mb-1">Lokasi</p>
                             <p class="font-medium text-slate-100 text-sm line-clamp-2" title="{{ $kegiatan->tempat }}">{{ $kegiatan->tempat ?? '-' }}</p>
+                            @if($kegiatan->link_maps)
+                                <a href="{{ $kegiatan->link_maps }}" target="_blank" class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20">
+                                    <i class="fas fa-map"></i> Buka Google Maps
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>
+
+                @if($kegiatan->alamat_lengkap)
+                <div class="mb-12 p-6 rounded-2xl bg-white/5 border border-white/5">
+                    <h4 class="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
+                        <i class="fas fa-map-pin text-emerald-400"></i> Alamat Lengkap
+                    </h4>
+                    <p class="text-slate-400 text-sm leading-relaxed">
+                        {{ $kegiatan->alamat_lengkap }}
+                    </p>
+                </div>
+                @endif
 
                 <!-- Divider -->
                 <div class="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-12"></div>
@@ -127,143 +157,12 @@
 
                 <!-- Gallery -->
                 @if($kegiatan->dokumentasi && $kegiatan->dokumentasi->count() > 0)
-                <div class="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-12"></div>
-                <section>
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-bold text-white flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-teal-500/20 flex items-center justify-center text-teal-400">
-                                <i class="fas fa-images text-sm"></i>
-                            </div>
-                            Galeri Dokumentasi
-                        </h3>
-                        <p class="text-slate-400 mt-2 ml-11 text-sm">Momen yang tertangkap pada acara ini.</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5">
-                        @foreach($kegiatan->dokumentasi as $idx => $dok)
-                        <div class="group relative cursor-pointer overflow-hidden rounded-2xl bg-slate-800 border border-white/5 hover:border-emerald-500/50 transition-all duration-300 shadow-lg aspect-square"
-                             onclick="openLightbox({{ $idx }})">
-                            <img 
-                                src="{{ asset('storage/' . $dok->file_path) }}"
-                                alt="Dokumentasi {{ $loop->iteration }}"
-                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                loading="lazy"
-                            >
-                            <!-- Hover Overlay -->
-                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-                                <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center scale-50 group-hover:scale-100 transition-transform duration-500 shadow-xl">
-                                    <i class="fas fa-expand text-white"></i>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </section>
                 @endif
 
             </div>
         </div>
     </main>
 
-    <!-- Lightbox Modal -->
-    @if($kegiatan->dokumentasi && $kegiatan->dokumentasi->count() > 0)
-    <div id="lightbox" class="fixed inset-0 z-[9999] bg-slate-950/95 backdrop-blur-xl hidden items-center justify-center p-4 transition-opacity duration-300 opacity-0" onclick="closeLightboxOnBg(event)">
-        <div class="relative w-full max-w-6xl flex flex-col items-center">
-            
-            <button onclick="closeLightbox()" class="absolute top-4 right-4 md:-top-12 md:right-0 w-12 h-12 rounded-full bg-white/10 hover:bg-red-500 text-white flex items-center justify-center transition-all z-50">
-                <i class="fas fa-xmark text-xl"></i>
-            </button>
-
-            <button onclick="prevPhoto(event)" class="absolute left-2 md:-left-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all z-50 backdrop-blur-sm" id="lb-prev">
-                <i class="fas fa-chevron-left text-xl"></i>
-            </button>
-
-            <div class="relative w-full flex justify-center items-center h-[70vh] md:h-[80vh]">
-                <img id="lb-image" src="" alt="Preview" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-all duration-300 scale-95">
-            </div>
-
-            <button onclick="nextPhoto(event)" class="absolute right-2 md:-right-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all z-50 backdrop-blur-sm" id="lb-next">
-                <i class="fas fa-chevron-right text-xl"></i>
-            </button>
-
-            <div class="mt-6 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white text-sm font-bold tracking-widest shadow-lg">
-                <span id="lb-counter" class="text-emerald-400">1</span> <span class="text-slate-500 mx-1">/</span> {{ $kegiatan->dokumentasi->count() }}
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const photos = @json($kegiatan->dokumentasi->map(function($dok) {
-            return asset('storage/' . $dok->file_path);
-        })->values());
-        
-        let currentIdx = 0;
-        const lightbox = document.getElementById('lightbox');
-        const lbImage = document.getElementById('lb-image');
-        const lbCounter = document.getElementById('lb-counter');
-        const lbPrev = document.getElementById('lb-prev');
-        const lbNext = document.getElementById('lb-next');
-
-        function openLightbox(idx) {
-            if (!photos || photos.length === 0) return;
-            currentIdx = idx;
-            updateLightbox();
-            lightbox.classList.remove('hidden');
-            lightbox.classList.add('flex');
-            void lightbox.offsetWidth; // trigger reflow
-            lightbox.classList.remove('opacity-0');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeLightbox() {
-            lightbox.classList.add('opacity-0');
-            setTimeout(() => {
-                lightbox.classList.add('hidden');
-                lightbox.classList.remove('flex');
-                document.body.style.overflow = '';
-            }, 300);
-        }
-
-        function closeLightboxOnBg(e) {
-            if (e.target === lightbox) closeLightbox();
-        }
-
-        function updateLightbox() {
-            lbImage.classList.add('scale-95', 'opacity-50');
-            setTimeout(() => {
-                lbImage.src = photos[currentIdx];
-                lbCounter.textContent = currentIdx + 1;
-                
-                lbPrev.style.opacity = currentIdx === 0 ? '0.3' : '1';
-                lbPrev.style.pointerEvents = currentIdx === 0 ? 'none' : 'auto';
-                
-                lbNext.style.opacity = currentIdx === photos.length - 1 ? '0.3' : '1';
-                lbNext.style.pointerEvents = currentIdx === photos.length - 1 ? 'none' : 'auto';
-                
-                lbImage.classList.remove('scale-95', 'opacity-50');
-                lbImage.classList.add('scale-100', 'opacity-100');
-            }, 150);
-        }
-
-        function prevPhoto(e) {
-            if (e) e.stopPropagation();
-            if (currentIdx > 0) { currentIdx--; updateLightbox(); }
-        }
-
-        function nextPhoto(e) {
-            if (e) e.stopPropagation();
-            if (currentIdx < photos.length - 1) { currentIdx++; updateLightbox(); }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (!lightbox.classList.contains('hidden')) {
-                if (e.key === 'Escape') closeLightbox();
-                if (e.key === 'ArrowLeft') prevPhoto();
-                if (e.key === 'ArrowRight') nextPhoto();
-            }
-        });
-    </script>
-    @endif
 
     <!-- Footer -->
     <footer class="border-t border-white/5 py-8 mt-auto z-10 bg-slate-950/50 backdrop-blur-sm">
@@ -271,6 +170,28 @@
             &copy; {{ date('Y') }} Sistem Informasi Kegiatan Luar Kantor. All rights reserved.
         </div>
     </footer>
+
+    @auth
+    @if(auth()->user()->role === 'peserta' && !auth()->user()->biodata_verified)
+    <!-- Modal Biodata Belum Lengkap -->
+    <div id="biodata-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
+            <button onclick="document.getElementById('biodata-modal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mb-4 mx-auto text-xl">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="text-xl font-bold text-center text-white mb-2">Biodata Belum Lengkap</h3>
+            <p class="text-slate-400 text-sm text-center mb-6">Anda harus melengkapi profil dan biodata Anda terlebih dahulu sebelum dapat bergabung dengan kegiatan ini.</p>
+            <div class="flex justify-center gap-3">
+                <a href="{{ route('biodata.create') }}" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all">Lengkapi Biodata</a>
+                <button onclick="document.getElementById('biodata-modal').classList.add('hidden')" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl transition-all">Batal</button>
+            </div>
+        </div>
+    </div>
+    @endif
+    @endauth
 
 </body>
 </html>

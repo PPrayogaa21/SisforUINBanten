@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
@@ -24,7 +23,6 @@
         .glass { background:rgba(255,255,255,0.05); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.09); }
         .nav-pill { transition: all .2s; }
         .nav-pill:hover { color:#fff; }
-        #map { height: 450px; }
     </style>
 </head>
 <body class="font-sans antialiased text-white" style="background-color:#080e1a;">
@@ -48,9 +46,6 @@
                 <div class="hidden md:flex items-center gap-8">
                     <a href="#hero" class="nav-pill text-sm text-slate-400 font-medium">Beranda</a>
                     <a href="#kegiatan" class="nav-pill text-sm text-slate-400 font-medium">Kegiatan</a>
-                    @auth
-                    <a href="#peta" class="nav-pill text-sm text-slate-400 font-medium">Lokasi</a>
-                    @endauth
                 </div>
 
                 <!-- Auth -->
@@ -81,7 +76,7 @@
 
         <!-- Campus background photo -->
         <div class="absolute inset-0 z-0">
-            <img src="{{ asset('img/uin2.jpg') }}" class="w-full h-full object-cover object-center" style="opacity:0.5;" alt="Kampus UIN SMH Banten">
+            <img src="{{ asset('img/uin.jpg') }}" class="w-full h-full object-cover object-center" style="opacity:0.5;" alt="Kampus UIN SMH Banten">
             <!-- Layered gradient: dark top and strong bottom fade -->
             <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(8,14,26,0.35) 0%, rgba(8,14,26,0.60) 55%, rgba(8,14,26,1) 100%);"></div>
         </div>
@@ -247,21 +242,7 @@
         </div>
     </section>
 
-    <!-- ===== PETA ===== -->
-    @if(count($locations) > 0)
-    <section id="peta" class="py-24 border-t border-white/5">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-14">
-                <p class="text-emerald-400 text-sm font-bold uppercase tracking-widest mb-3">Sebaran Lokasi</p>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">Peta Lokasi Kegiatan</h2>
-                <p class="text-slate-400 mt-3 text-base">Sebaran lokasi kegiatan luar kantor UIN SMH Banten</p>
-            </div>
-            <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                <div id="map" class="w-full"></div>
-            </div>
-        </div>
-    </section>
-    @endif
+
 
     <!-- ===== FOOTER ===== -->
     <footer class="border-t border-white/5 py-12 mt-4" style="background:rgba(0,0,0,0.3);">
@@ -279,14 +260,12 @@
                 <div class="flex items-center gap-8 text-sm text-slate-500">
                     <a href="#hero" class="hover:text-slate-300 transition-colors">Beranda</a>
                     <a href="#kegiatan" class="hover:text-slate-300 transition-colors">Kegiatan</a>
-                    <a href="#peta" class="hover:text-slate-300 transition-colors">Lokasi</a>
                 </div>
                 <p class="text-slate-600 text-sm">&copy; {{ date('Y') }} UIN SMH Banten. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Navbar smooth scroll effect (CSS transition handles smoothness)
@@ -300,31 +279,6 @@
             };
             window.addEventListener('scroll', onScroll, { passive: true });
             onScroll(); // run once on load
-
-            // Map
-            const locations = @json($locations);
-            if (!locations || !locations.length) return;
-
-            const map = L.map('map').setView([locations[0].lat, locations[0].lng], 12);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                maxZoom: 19,
-                attribution: '&copy; OpenStreetMap &copy; CARTO'
-            }).addTo(map);
-
-            const icon = L.divIcon({
-                html: `<div style="width:14px;height:14px;background:#10b981;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 3px rgba(16,185,129,0.3);"></div>`,
-                className: '',
-                iconSize: [14, 14],
-                iconAnchor: [7, 7]
-            });
-
-            const bounds = [];
-            locations.forEach(loc => {
-                const m = L.marker([loc.lat, loc.lng], {icon}).addTo(map);
-                bounds.push([loc.lat, loc.lng]);
-                m.bindPopup(`<div style="font-family:Inter,sans-serif;padding:4px;"><b style="color:#0f172a;font-size:13px;">${loc.nama}</b><br><small style="color:#64748b;">${loc.tempat} — ${loc.waktu}</small></div>`);
-            });
-            if (bounds.length > 1) map.fitBounds(bounds, { padding: [50, 50] });
         });
     </script>
 </body>

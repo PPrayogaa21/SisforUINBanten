@@ -102,21 +102,29 @@
                 </div>
 
                 <!-- Input Form -->
-                <form method="POST" action="{{ route('narasumber.kegiatan.materi.upload', $kegiatan) }}" enctype="multipart/form-data" class="bg-slate-50 rounded-2xl p-5 border border-slate-100 flex flex-col md:flex-row gap-4">
-                    @csrf
-                    <div class="flex-1">
-                        <input type="text" name="judul" required placeholder="Ketik Judul Materi..." class="w-full px-4 py-3 bg-white rounded-xl border border-slate-200 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 transition-all">
+                @if($kegiatan->status === 'completed')
+                    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 text-center">
+                        <i class="fas fa-lock text-slate-300 text-2xl mb-2"></i>
+                        <p class="text-slate-500 font-bold text-sm">Kegiatan Selesai</p>
+                        <p class="text-slate-400 text-xs">Pemuatan materi baru telah ditutup</p>
                     </div>
-                    <div class="relative group">
-                        <input type="file" name="file" required accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip" class="absolute inset-0 opacity-0 w-full cursor-pointer z-20">
-                        <div class="h-full flex items-center px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-500 group-hover:border-blue-300 transition-colors z-10 relative overflow-hidden whitespace-nowrap">
-                            <i class="fas fa-paperclip mr-2 text-blue-400"></i> Pilih File
+                @else
+                    <form method="POST" action="{{ route('narasumber.kegiatan.materi.upload', $kegiatan) }}" enctype="multipart/form-data" class="bg-slate-50 rounded-2xl p-5 border border-slate-100 flex flex-col md:flex-row gap-4">
+                        @csrf
+                        <div class="flex-1">
+                            <input type="text" name="judul" required placeholder="Ketik Judul Materi..." class="w-full px-4 py-3 bg-white rounded-xl border border-slate-200 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-400 transition-all">
                         </div>
-                    </div>
-                    <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:-translate-y-0.5 active:scale-95">
-                        Unggah
-                    </button>
-                </form>
+                        <div class="relative group">
+                            <input type="file" name="file" required accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip" class="absolute inset-0 opacity-0 w-full cursor-pointer z-20">
+                            <div class="h-full flex items-center px-4 py-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-500 group-hover:border-blue-300 transition-colors z-10 relative overflow-hidden whitespace-nowrap">
+                                <i class="fas fa-paperclip mr-2 text-blue-400"></i> Pilih File
+                            </div>
+                        </div>
+                        <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:-translate-y-0.5 active:scale-95">
+                            Unggah
+                        </button>
+                    </form>
+                @endif
 
                 <!-- Material Listing -->
                 <div class="space-y-3 mt-2">
@@ -139,7 +147,7 @@
                             <a href="{{ Storage::disk('public')->url($m->file_path) }}" target="_blank" class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all shadow-xs" title="Lihat File">
                                 <i class="fas fa-eye text-xs"></i>
                             </a>
-                            @if($m->uploaded_by == auth()->id())
+                            @if($m->uploaded_by == auth()->id() && $kegiatan->status !== 'completed')
                             <form method="POST" action="{{ route('narasumber.kegiatan.materi.delete', [$kegiatan, $m]) }}" class="inline form-delete">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all shadow-xs" title="Hapus Materi">

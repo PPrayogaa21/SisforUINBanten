@@ -12,6 +12,7 @@ class KegiatanController extends Controller
     public function index()
     {
         $kegiatan = auth()->user()->kegiatanSebagaiNarasumber()
+            ->whereIn('status', ['published', 'ongoing', 'completed'])
             ->with('peserta', 'materi')
             ->orderBy('waktu_mulai', 'desc')
             ->paginate(10);
@@ -21,6 +22,11 @@ class KegiatanController extends Controller
 
     public function show(Kegiatan $kegiatan)
     {
+        // Only allow access to published, ongoing, or completed activities
+        if (in_array($kegiatan->status, ['draft', 'cancelled'])) {
+            abort(403, 'Kegiatan ini tidak tersedia.');
+        }
+
         $user = auth()->user();
         if (!$kegiatan->narasumber()->where('user_id', $user->id)->exists()) {
             abort(403);

@@ -33,15 +33,6 @@
             <p class="text-xs text-slate-400 mt-2">1 = Sangat Buruk, 5 = Sangat Baik</p>
             @elseif($p->tipe === 'text')
             <textarea name="jawaban[{{ $p->id }}]" required rows="3" class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 resize-none" placeholder="Tulis jawaban Anda..."></textarea>
-            @elseif($p->tipe === 'pilihan_ganda' && $p->opsi)
-            <div class="space-y-2">
-                @foreach($p->opsi as $opsi)
-                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:border-emerald-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 transition-all">
-                    <input type="radio" name="jawaban[{{ $p->id }}]" value="{{ $opsi }}" required class="text-emerald-500 focus:ring-emerald-400">
-                    <span class="text-sm text-slate-700">{{ $opsi }}</span>
-                </label>
-                @endforeach
-            </div>
             @endif
         </div>
         @endforeach

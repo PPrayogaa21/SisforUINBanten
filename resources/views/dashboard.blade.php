@@ -7,7 +7,7 @@
 @php
     $ongoingUser   = $kegiatanDiikuti->where('status', 'ongoing')->count();
     $completedUser = $kegiatanDiikuti->where('status', 'completed')->count();
-    $priorityKegiatan = $kegiatanDiikuti->sortBy('waktu_mulai')->first();
+    $priorityKegiatan = $kegiatanDiikuti->whereIn('status', ['published', 'ongoing'])->sortBy('waktu_mulai')->first();
     $jadwalHariIni    = $kegiatanDiikuti->filter(fn($k) => $k->waktu_mulai && $k->waktu_mulai->isToday())->sortBy('waktu_mulai');
 @endphp
 
@@ -252,9 +252,9 @@
                     $isSelesai    = $item->status === 'completed';
                 @endphp
 
-                <div class="group relative overflow-hidden bg-white rounded-3xl border border-slate-200/60 shadow-sm hover:shadow-xl hover:shadow-slate-200/80 hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                <div class="group relative overflow-hidden bg-white rounded-3xl border border-slate-200/60 shadow-sm {{ $isSelesai ? 'opacity-75 grayscale-[0.5] cursor-not-allowed' : 'hover:shadow-xl hover:shadow-slate-200/80 hover:-translate-y-1 transition-all duration-300' }} flex flex-col">
                     {{-- Top accent line --}}
-                    <div class="h-1 w-full {{ $isPeserta ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : ($isNarasumber ? 'bg-gradient-to-r from-blue-400 to-cyan-500' : 'bg-gradient-to-r from-slate-200 to-slate-300') }}"></div>
+                    <div class="h-1 w-full {{ $isSelesai ? 'bg-slate-300' : ($isPeserta ? 'bg-gradient-to-r from-emerald-400 to-teal-500' : ($isNarasumber ? 'bg-gradient-to-r from-blue-400 to-cyan-500' : 'bg-gradient-to-r from-slate-200 to-slate-300')) }}"></div>
 
                     <div class="p-6 flex-1">
                         {{-- Header badges --}}
@@ -264,24 +264,24 @@
                                     {{ $item->jenis ?? 'Seminar' }}
                                 </span>
                                 @if($isSelesai)
-                                    <span class="px-3 py-1 bg-slate-50 text-slate-400 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-slate-200 flex items-center gap-1">
-                                        <i class="fas fa-check text-[9px]"></i> Selesai
+                                    <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-bold uppercase tracking-wider border border-amber-200 flex items-center gap-1">
+                                        <i class="fas fa-check-double text-[9px]"></i> Selesai
                                     </span>
                                 @endif
                             </div>
 
-                            @if($isPeserta)
+                            @if($isPeserta && !$isSelesai)
                                 <div class="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-500 shrink-0 ring-4 ring-emerald-50 shadow-sm" title="Anda sebagai Peserta">
                                     <i class="fas fa-user-check"></i>
                                 </div>
-                            @elseif($isNarasumber)
+                            @elseif($isNarasumber && !$isSelesai)
                                 <div class="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 shrink-0 ring-4 ring-blue-50 shadow-sm" title="Anda sebagai Narasumber">
                                     <i class="fas fa-chalkboard-user"></i>
                                 </div>
                             @endif
                         </div>
 
-                        <h4 class="font-extrabold text-slate-800 text-lg mb-4 line-clamp-2 leading-snug group-hover:text-slate-900 transition-colors">
+                        <h4 class="font-extrabold text-slate-800 text-lg mb-4 line-clamp-2 leading-snug {{ !$isSelesai ? 'group-hover:text-slate-900' : 'text-slate-500' }} transition-colors">
                             {{ $item->nama_kegiatan }}
                         </h4>
 
@@ -303,7 +303,11 @@
 
                     {{-- Footer action --}}
                     <div class="p-4 border-t border-slate-100 bg-slate-50/50 mt-auto">
-                        @if($isPeserta)
+                        @if($isSelesai)
+                            <div class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 border border-slate-200 text-slate-400 rounded-2xl text-sm font-bold">
+                                <i class="fas fa-ban text-xs"></i> Akses Ditutup
+                            </div>
+                        @elseif($isPeserta)
                             <a href="{{ route('peserta.kegiatan.show', $item) }}"
                                class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-sm font-black transition-all shadow-sm shadow-emerald-600/20 hover:-translate-y-0.5">
                                 Masuk sebagai Peserta <i class="fas fa-arrow-right text-xs"></i>
@@ -313,15 +317,10 @@
                                class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-sm font-black transition-all shadow-sm shadow-blue-600/20 hover:-translate-y-0.5">
                                 Masuk sebagai Narasumber <i class="fas fa-arrow-right text-xs"></i>
                             </a>
-                        @elseif(!$isSelesai)
+                        @else
                             <button disabled
                                     class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white border border-slate-200 text-slate-400 rounded-2xl text-sm font-bold cursor-not-allowed">
                                 <i class="fas fa-lock text-xs"></i> Belum Terdaftar
-                            </button>
-                        @else
-                            <button disabled
-                                    class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-slate-100 border border-slate-200 text-slate-500 rounded-2xl text-sm font-bold cursor-not-allowed">
-                                <i class="fas fa-check-double text-xs"></i> Kegiatan Selesai
                             </button>
                         @endif
                     </div>

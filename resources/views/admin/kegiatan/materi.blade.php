@@ -98,7 +98,7 @@
                                 title="Download / Preview">
                                 <i class="fas fa-download"></i>
                             </a>
-                            <form method="POST" action="{{ route('admin.kegiatan.materi.delete', [$kegiatan, $m]) }}" onsubmit="return confirm('Hapus materi ini?')">
+                            <form method="POST" action="{{ route('admin.kegiatan.materi.delete', [$kegiatan, $m]) }}" class="form-delete">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-all border border-transparent hover:border-red-100">
                                     <i class="fas fa-trash-alt"></i>
@@ -120,4 +120,35 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.form-delete');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Hapus Materi?',
+                    text: "Materi ini akan dihapus secara permanen.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-3xl font-sans',
+                        confirmButton: 'rounded-xl px-5 py-2.5 font-bold text-sm',
+                        cancelButton: 'rounded-xl px-5 py-2.5 font-bold text-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) this.submit();
+                });
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

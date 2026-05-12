@@ -11,7 +11,7 @@ class LandingController extends Controller
     public function index()
     {
         $kegiatanTerbaru = Kegiatan::with('dokumentasi', 'peserta', 'narasumber')
-            ->where('status', '!=', 'draft')
+            ->whereIn('status', ['published', 'ongoing', 'completed'])
             ->orderBy('waktu_mulai', 'desc')
             ->take(5)
             ->get();
@@ -27,14 +27,14 @@ class LandingController extends Controller
             if ($user->isAdmin()) {
                 $kegiatanDenganLokasi = Kegiatan::whereNotNull('latitude')
                     ->whereNotNull('longitude')
-                    ->where('status', '!=', 'draft')
+                    ->whereIn('status', ['published', 'ongoing', 'completed'])
                     ->orderBy('waktu_mulai', 'desc')
                     ->take(20)
                     ->get();
             } else {
                 $kegiatanDenganLokasi = Kegiatan::whereNotNull('latitude')
                     ->whereNotNull('longitude')
-                    ->where('status', '!=', 'draft')
+                    ->whereIn('status', ['published', 'ongoing', 'completed'])
                     ->where(function ($query) use ($user) {
                         $query->whereHas('peserta', function ($q) use ($user) {
                             $q->where('users.id', $user->id);
@@ -50,7 +50,7 @@ class LandingController extends Controller
             $kegiatanDenganLokasi = collect();
         }
 
-        $totalKegiatan = Kegiatan::where('status', '!=', 'draft')->count();
+        $totalKegiatan = Kegiatan::whereIn('status', ['published', 'ongoing', 'completed'])->count();
         $totalKegiatanSelesai = Kegiatan::where('status', 'completed')->count();
 
     

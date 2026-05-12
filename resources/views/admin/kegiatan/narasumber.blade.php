@@ -236,12 +236,29 @@
     });
 
     function deleteNarasumber(url) {
-        if(confirm('Hapus narasumber ini dari kegiatan?')) {
-            const form = document.getElementById('deleteNarasumberForm');
-            form.action = url;
-            form.submit();
-        }
+        Swal.fire({
+            title: 'Hapus Narasumber?',
+            text: "Narasumber ini akan dihapus dari daftar kegiatan.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'rounded-3xl font-sans',
+                confirmButton: 'rounded-xl px-5 py-2.5 font-bold text-sm',
+                cancelButton: 'rounded-xl px-5 py-2.5 font-bold text-sm'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('deleteNarasumberForm');
+                form.action = url;
+                form.submit();
+            }
+        });
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endpush
 @endsection

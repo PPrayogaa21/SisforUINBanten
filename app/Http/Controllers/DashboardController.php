@@ -15,15 +15,24 @@ class DashboardController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        $kegiatan = Kegiatan::latest()->get();
+        // Dashboard shows published, ongoing, and completed activities
+        $kegiatan = Kegiatan::whereIn('status', ['published', 'ongoing', 'completed'])
+            ->latest()
+            ->get();
 
-        $kegiatanDiikuti = $kegiatan->filter(function ($item) use ($user) {
-            return $item->isPeserta($user->id) || $item->isNarasumber($user->id);
-        });
+        // Stats and Priority should include completed activities for history, but exclude draft/cancelled
+        $allUserKegiatan = Kegiatan::whereIn('status', ['published', 'ongoing', 'completed'])
+            ->where(function($query) use ($user) {
+                $query->whereHas('peserta', fn($q) => $q->where('user_id', $user->id))
+                      ->orWhereHas('narasumber', fn($q) => $q->where('user_id', $user->id));
+            })
+            ->latest()
+            ->get();
 
+        $kegiatanDiikuti = $allUserKegiatan;
         $totalKegiatanDiikuti = $kegiatanDiikuti->count();
-        $kegiatanAktif = $kegiatan->where('status', 'ongoing')->count();
-        $kegiatanSelesai = $kegiatan->where('status', 'completed')->count();
+        $kegiatanAktif = $kegiatanDiikuti->where('status', 'ongoing')->count();
+        $kegiatanSelesai = $kegiatanDiikuti->where('status', 'completed')->count();
 
         return view('dashboard', compact(
             'user',

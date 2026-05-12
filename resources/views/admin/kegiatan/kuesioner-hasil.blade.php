@@ -4,9 +4,14 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
-    <div>
-        <h2 class="text-lg font-bold text-slate-800">{{ $kuesioner->judul }}</h2>
-        <p class="text-sm text-slate-500">{{ $kegiatan->nama_kegiatan }} · {{ $kuesioner->responses->count() }} responden</p>
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-lg font-bold text-slate-800">{{ $kuesioner->judul }}</h2>
+            <p class="text-sm text-slate-500">{{ $kegiatan->nama_kegiatan }} · {{ $kuesioner->responses->count() }} responden</p>
+        </div>
+        <a href="{{ route('admin.kegiatan.kuesioner', $kegiatan) }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm shadow-sm transition-all">
+            <i class="fas fa-arrow-left text-slate-400"></i> Kembali
+        </a>
     </div>
 
     @foreach($kuesioner->pertanyaan as $p)

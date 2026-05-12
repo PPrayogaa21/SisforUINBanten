@@ -70,7 +70,7 @@
                         <div class="flex items-center justify-end gap-1">
                             <a href="{{ route('admin.kegiatan.show', $item) }}" class="p-2 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-all" title="Detail"><i class="fas fa-eye"></i></a>
                             <a href="{{ route('admin.kegiatan.edit', $item) }}" class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Edit"><i class="fas fa-pen"></i></a>
-                            <form method="POST" action="{{ route('admin.kegiatan.destroy', $item) }}" class="inline" onsubmit="return confirm('Yakin ingin menghapus kegiatan ini?')">
+                            <form method="POST" action="{{ route('admin.kegiatan.destroy', $item) }}" class="inline form-delete">
                                 @csrf @method('DELETE')
                                 <button class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all" title="Hapus"><i class="fas fa-trash"></i></button>
                             </form>
@@ -95,4 +95,35 @@
     </div>
     @endif
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.form-delete');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Hapus Kegiatan?',
+                    text: "Seluruh data terkait kegiatan ini akan dihapus permanen.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-3xl font-sans',
+                        confirmButton: 'rounded-xl px-5 py-2.5 font-bold text-sm',
+                        cancelButton: 'rounded-xl px-5 py-2.5 font-bold text-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) this.submit();
+                });
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

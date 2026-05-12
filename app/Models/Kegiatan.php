@@ -16,6 +16,7 @@ class Kegiatan extends Model
         'waktu_mulai',
         'waktu_selesai',
         'tempat',
+        'link_maps',
         'latitude',
         'longitude',
         'alamat_lengkap',

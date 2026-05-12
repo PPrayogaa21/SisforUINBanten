@@ -162,12 +162,20 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-1">Konfirmasi Absensi</h3>
                     <p class="text-slate-400 text-xs mb-5 font-medium">Klik tombol di bawah untuk mencatat kehadiran Anda pada kegiatan ini.</p>
-                    <form action="{{ route('peserta.kegiatan.absen', $kegiatan->id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-extrabold text-sm rounded-2xl transition-all shadow-lg shadow-emerald-500/25 active:scale-95 flex items-center justify-center gap-2">
-                            <i class="fas fa-check-circle text-lg"></i> Absen Sekarang
-                        </button>
-                    </form>
+                    @if($kegiatan->status === 'completed')
+                        <div class="p-4 bg-white/5 border border-white/10 rounded-2xl text-center">
+                            <i class="fas fa-calendar-check text-emerald-400 mb-2 block text-xl"></i>
+                            <p class="text-white font-bold text-sm">Kegiatan Selesai</p>
+                            <p class="text-slate-400 text-[10px]">Absensi sudah ditutup</p>
+                        </div>
+                    @else
+                        <form action="{{ route('peserta.kegiatan.absen', $kegiatan->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-extrabold text-sm rounded-2xl transition-all shadow-lg shadow-emerald-500/25 active:scale-95 flex items-center justify-center gap-2">
+                                <i class="fas fa-check-circle text-lg"></i> Absen Sekarang
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
             @else
@@ -223,12 +231,21 @@
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
-                            <a href="{{ Storage::disk('public')->url($doc->file_path) }}" target="_blank" class="flex items-center justify-center py-2 bg-white border border-slate-200 text-[11px] font-bold text-slate-600 rounded-xl hover:bg-slate-50">
-                                <i class="fas fa-eye mr-1.5"></i> Lihat
-                            </a>
-                            <a href="{{ route('peserta.dokumen.download', [$kegiatan, $doc]) }}" class="flex items-center justify-center py-2 bg-amber-500 text-white text-[11px] font-bold rounded-xl hover:bg-amber-600 shadow-sm shadow-amber-500/20">
-                                <i class="fas fa-download mr-1.5"></i> Unduh
-                            </a>
+                            @if($statusKehadiran === 'hadir')
+                                <a href="{{ route('peserta.dokumen.view', [$kegiatan, $doc]) }}" target="_blank" class="flex items-center justify-center py-2 bg-white border border-slate-200 text-[11px] font-bold text-slate-600 rounded-xl hover:bg-slate-50">
+                                    <i class="fas fa-eye mr-1.5"></i> Lihat
+                                </a>
+                                <a href="{{ route('peserta.dokumen.download', [$kegiatan, $doc]) }}" class="flex items-center justify-center py-2 bg-amber-500 text-white text-[11px] font-bold rounded-xl hover:bg-amber-600 shadow-sm shadow-amber-500/20">
+                                    <i class="fas fa-download mr-1.5"></i> Unduh
+                                </a>
+                            @else
+                                <button type="button" onclick="alert('Anda harus mengonfirmasi kehadiran terlebih dahulu untuk mengakses dokumen ini.')" class="flex items-center justify-center py-2 bg-slate-100 border border-slate-200 text-[11px] font-bold text-slate-400 rounded-xl cursor-not-allowed">
+                                    <i class="fas fa-eye mr-1.5"></i> Lihat
+                                </button>
+                                <button type="button" onclick="alert('Anda harus mengonfirmasi kehadiran terlebih dahulu untuk mengakses dokumen ini.')" class="flex items-center justify-center py-2 bg-slate-200 text-slate-500 text-[11px] font-bold rounded-xl cursor-not-allowed">
+                                    <i class="fas fa-download mr-1.5"></i> Unduh
+                                </button>
+                            @endif
                         </div>
                     </div>
                     @endforeach

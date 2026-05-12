@@ -88,7 +88,7 @@
                             <a href="{{ asset('storage/' . $dok->file_path) }}" target="_blank" class="flex-1 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white text-center text-[11px] font-bold backdrop-blur-sm transition-all border border-white/10">
                                 Lihat
                             </a>
-                            <form method="POST" action="{{ route('admin.kegiatan.dokumentasi.delete', [$kegiatan, $dok]) }}" onsubmit="return confirm('Hapus foto ini?')" class="flex-shrink-0">
+                            <form method="POST" action="{{ route('admin.kegiatan.dokumentasi.delete', [$kegiatan, $dok]) }}" class="form-delete flex-shrink-0">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="w-9 h-9 rounded-xl bg-red-500/80 hover:bg-red-600 text-white flex items-center justify-center backdrop-blur-sm transition-all border border-white/10">
                                     <i class="fas fa-trash-alt text-xs"></i>
@@ -111,4 +111,35 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.form-delete');
+        deleteForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Hapus Foto?',
+                    text: "Foto ini akan dihapus permanen dari galeri.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    customClass: {
+                        popup: 'rounded-3xl font-sans',
+                        confirmButton: 'rounded-xl px-5 py-2.5 font-bold text-sm',
+                        cancelButton: 'rounded-xl px-5 py-2.5 font-bold text-sm'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) this.submit();
+                });
+            });
+        });
+    });
+</script>
+@endpush
 @endsection

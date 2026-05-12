@@ -53,6 +53,16 @@ class LoginController extends Controller
 
             $user = Auth::user();
 
+            if ($user->account_status === 'pending') {
+                Auth::logout();
+                return back()->withErrors(['username' => 'Akun Anda sedang menunggu persetujuan Admin.']);
+            }
+
+            if ($user->account_status === 'rejected') {
+                Auth::logout();
+                return back()->withErrors(['username' => 'Akun Anda ditolak oleh Admin.']);
+            }
+
             // Admin langsung ke dashboard admin
             if ($user->isAdmin()) {
                 session(['active_role' => 'admin']);

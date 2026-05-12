@@ -27,6 +27,14 @@ class UserController extends Controller
         $users = $query->paginate(10)->withQueryString();
         return view('admin.users.index', compact('users'));
     }
+    public function approvalIndex()
+    {
+        $users = User::where('account_status', 'pending')
+            ->latest()
+            ->paginate(10);
+            
+        return view('admin.users.approval', compact('users'));
+    }
 
     public function create()
     {
@@ -111,5 +119,17 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
+    }
+
+    public function approve(User $user)
+    {
+        $user->update(['account_status' => 'approved']);
+        return back()->with('success', 'Akun berhasil disetujui.');
+    }
+
+    public function reject(User $user)
+    {
+        $user->update(['account_status' => 'rejected']);
+        return back()->with('success', 'Akun telah ditolak.');
     }
 }
