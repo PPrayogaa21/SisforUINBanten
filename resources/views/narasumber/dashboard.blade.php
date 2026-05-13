@@ -108,7 +108,9 @@
                             ($item->status === 'completed' ? 'border-emerald-500' : 'border-amber-400')
                         }} rounded-full transition-all group-hover:scale-125 z-10"></div>
 
-                        <a href="{{ route('narasumber.kegiatan.show', $item) }}" class="block group/item">
+                        <a href="{{ route('narasumber.kegiatan.show', $item) }}" 
+                           @if(!auth()->user()->biodata_verified) onclick="event.preventDefault(); openBiodataModal();" @endif
+                           class="block group/item">
                             <div class="flex items-center justify-between gap-2 mb-1">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                                     {{ $item->waktu_mulai ? $item->waktu_mulai->translatedFormat('d M Y, H:i') . ' WIB' : 'TBA' }}

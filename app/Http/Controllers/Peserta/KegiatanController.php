@@ -27,6 +27,7 @@ class KegiatanController extends Controller
             abort(403, 'Kegiatan ini tidak tersedia.');
         }
 
+        session(['active_role' => 'peserta']);
         $user = auth()->user();
         $isPeserta = $kegiatan->peserta()->where('user_id', $user->id)->exists();
         if (!$isPeserta) {

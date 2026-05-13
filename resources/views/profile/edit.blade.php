@@ -4,7 +4,7 @@
 
 @section('content')
 @php
-    $isNarasumber = auth()->user()->kegiatanSebagaiNarasumber()->exists() || (auth()->user()->biodata && strtoupper(auth()->user()->biodata->ket) === 'NARASUMBER');
+    $isLocked = session('active_role') === 'narasumber' && auth()->user()->biodata_verified;
 @endphp
 <div class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center gap-4 mb-6">
@@ -29,12 +29,12 @@
     </div>
     @endif
 
-    @if($isNarasumber)
+    @if($isLocked)
     <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm flex items-start gap-3">
         <i class="fas fa-info-circle text-amber-500 mt-0.5 text-base"></i>
         <div>
             <p class="font-semibold text-slate-800">Mode Lihat-Saja (Read-Only)</p>
-            <p class="text-xs text-amber-700 mt-0.5">Sebagai Narasumber, Anda tidak diperbolehkan mengedit biodata sendiri. Silakan hubungi Administrator jika terdapat perubahan atau pembaruan data profil.</p>
+            <p class="text-xs text-amber-700 mt-0.5">Saat aktif dalam peran Narasumber, biodata Anda dikunci untuk keperluan administrasi kegiatan. Silakan hubungi Administrator jika terdapat perubahan data mendesak.</p>
         </div>
     </div>
     @endif
@@ -43,7 +43,7 @@
         @csrf
         @method('PUT')
 
-        <fieldset @if($isNarasumber) disabled class="opacity-85" @endif class="space-y-6">
+        <fieldset @if($isLocked) disabled class="opacity-85" @endif class="space-y-6">
 
         {{-- Foto Profil --}}
         <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm flex flex-col sm:flex-row gap-6 items-center sm:items-start">
@@ -55,7 +55,7 @@
                         <span class="text-3xl font-bold text-slate-300">{{ strtoupper(substr($biodata->nama_lengkap ?? $user->username ?? 'U', 0, 1)) }}</span>
                     @endif
                 </div>
-                @if(!$isNarasumber)
+                @if(!$isLocked)
                 <label for="foto" class="absolute bottom-0 right-0 w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-emerald-600 shadow-md transition-colors">
                     <i class="fas fa-camera text-sm"></i>
                 </label>
@@ -188,10 +188,10 @@
 
         {{-- Tombol Aksi --}}
         <div class="flex items-center justify-end gap-3 pt-2">
-            @if($isNarasumber)
-                <a href="{{ route('dashboard') }}"
+            @if($isLocked)
+                <a href="{{ route('narasumber.dashboard') }}"
                    class="px-6 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition-colors flex items-center gap-2">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
                 </a>
             @else
                 <a href="{{ url()->previous() != url()->current() ? url()->previous() : route('dashboard') }}"

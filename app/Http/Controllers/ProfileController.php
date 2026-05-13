@@ -20,9 +20,11 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
 
-        $isNarasumber = $user->kegiatanSebagaiNarasumber()->exists() || ($user->biodata && strtoupper($user->biodata->ket) === 'NARASUMBER');
-        if ($isNarasumber) {
-            return back()->with('error', 'Narasumber tidak diperbolehkan mengedit biodata sendiri. Silakan hubungi admin.');
+        // Lock only if user is currently acting as Narasumber AND has already filled their biodata once.
+        $isLocked = session('active_role') === 'narasumber' && $user->biodata_verified;
+        
+        if ($isLocked) {
+            return back()->with('error', 'Saat aktif sebagai Narasumber, data biodata terkunci untuk keperluan administrasi. Silakan hubungi admin jika memerlukan perubahan.');
         }
 
         $request->validate([

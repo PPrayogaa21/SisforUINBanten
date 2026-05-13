@@ -3,10 +3,7 @@
 @section('page-title', 'Detail Kegiatan')
 
 @push('styles')
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<style>
-    #map { height: 350px; border-radius: 1.5rem; z-index: 10; }
-</style>
+    iframe { height: 350px; border-radius: 1.5rem; z-index: 10; border: none; }
 @endpush
 
 @section('content')
@@ -65,15 +62,22 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                            <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-100 text-blue-500 shrink-0">
-                                <i class="fas fa-map-location text-xl"></i>
+                        <div class="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <div class="flex items-center gap-4 overflow-hidden">
+                                <div class="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-100 text-blue-500 shrink-0">
+                                    <i class="fas fa-map-location text-xl"></i>
+                                </div>
+                                <div class="truncate">
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-0.5">Lokasi</p>
+                                    <p class="text-sm font-bold text-slate-700 truncate" title="{{ $kegiatan->tempat }}">{{ $kegiatan->tempat }}</p>
+                                    <p class="text-xs font-medium text-slate-500">Tatap Muka</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-0.5">Lokasi</p>
-                                <p class="text-sm font-bold text-slate-700 truncate" title="{{ $kegiatan->tempat }}">{{ $kegiatan->tempat }}</p>
-                                <p class="text-xs font-medium text-slate-500">Tatap Muka</p>
-                            </div>
+                            @if($kegiatan->link_maps)
+                            <a href="{{ $kegiatan->link_maps }}" target="_blank" class="shrink-0 w-10 h-10 rounded-xl bg-white border border-slate-200 text-emerald-600 shadow-sm flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-200 transition-all" title="Buka Google Maps">
+                                <i class="fas fa-location-arrow text-sm"></i>
+                            </a>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -82,7 +86,13 @@
             <!-- Map View Card -->
             @if($kegiatan->latitude && $kegiatan->longitude)
             <div class="bg-white rounded-3xl p-2 border border-slate-200/60 shadow-sm relative overflow-hidden">
-                <div id="map" class="w-full relative z-10 shadow-inner"></div>
+                <iframe 
+                    class="w-full h-[350px] rounded-2xl relative z-10 shadow-inner"
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps?q={{ $kegiatan->latitude }},{{ $kegiatan->longitude }}&hl=id&z=16&output=embed">
+                </iframe>
                 
                 @if($kegiatan->alamat_lengkap)
                 <div class="p-6 flex items-start gap-4">
@@ -324,37 +334,7 @@
 </div>
 
 @push('scripts')
-@if($kegiatan->latitude && $kegiatan->longitude)
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const lat = {{ $kegiatan->latitude }};
-        const lng = {{ $kegiatan->longitude }};
-        
-        const map = L.map('map').setView([lat, lng], 15);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19,
-            attribution: '&copy; OpenStreetMap'
-        }).addTo(map);
 
-        // Custom Pulse Icon mapped to Emerald Theme
-        const icon = L.divIcon({
-            html: `<div class="relative flex items-center justify-center"><div class="animate-ping absolute inline-flex h-8 w-8 rounded-full bg-emerald-400 opacity-75"></div><div class="relative inline-flex rounded-full h-5 w-5 bg-emerald-600 border-2 border-white shadow-lg"></div></div>`,
-            className: '',
-            iconSize: [20, 20],
-            iconAnchor: [10, 10]
-        });
-
-        L.marker([lat, lng], {icon: icon}).addTo(map)
-            .bindPopup("<div class='font-sans font-bold text-slate-800'>{{ $kegiatan->nama_kegiatan }}</div>")
-            .openPopup();
-    });
-</script>
-<style>
-    .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); }
-    .leaflet-popup-content { margin: 12px 16px; }
-</style>
-@endif
 @endpush
 
 @endsection

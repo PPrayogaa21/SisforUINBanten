@@ -71,12 +71,7 @@ class LoginController extends Controller
 
             // Cek biodata via API eksternal
             if (!$user->biodata_verified) {
-                $biodata = $this->biodataService->fetchAndStore($user);
-                if (!$biodata) {
-                    // Biodata tidak ditemukan di API, user harus isi manual
-                    return redirect()->route('biodata.create')
-                        ->with('info', 'Biodata tidak ditemukan di sistem. Silakan lengkapi biodata Anda.');
-                }
+                $this->biodataService->fetchAndStore($user);
             }
 
             // Redirect ke pemilihan role

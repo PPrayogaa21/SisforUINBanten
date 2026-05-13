@@ -61,21 +61,64 @@
                 <span>Kelola Kegiatan</span>
             </a>
 
-            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('admin.users.index') || request()->routeIs('admin.users.create') || request()->routeIs('admin.users.edit') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
-                <i class="fas fa-users-gear w-5 text-center"></i>
-                <span>Manajemen User</span>
-            </a>
+            {{-- Manajemen User Collapsible Dropdown Group --}}
+            @php
+                $isUserActive = request()->routeIs('admin.users.*');
+                $pendingCount = \App\Models\User::where('account_status', 'pending')->count();
+            @endphp
+            
+            <div class="space-y-1">
+                <button type="button" onclick="toggleUserDropdown()" 
+                   class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer group {{ $isUserActive ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
+                    <i class="fas fa-users-gear w-5 text-center {{ $isUserActive ? 'text-emerald-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    <span>Manajemen User</span>
+                    
+                    <div class="ml-auto flex items-center gap-2">
+                        @if($pendingCount > 0 && !$isUserActive)
+                            <span class="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">{{ $pendingCount }}</span>
+                        @endif
+                        <i id="user-chevron" class="fas fa-chevron-down text-[10px] transition-transform duration-300 {{ $isUserActive ? 'rotate-180' : '' }}"></i>
+                    </div>
+                </button>
 
-            <a href="{{ route('admin.users.approval') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 {{ request()->routeIs('admin.users.approval') ? 'bg-emerald-500/10 text-emerald-400 font-medium' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
-                <i class="fas fa-user-check w-5 text-center"></i>
-                <span>Approval User</span>
-                @php
-                    $pendingCount = \App\Models\User::where('account_status', 'pending')->count();
-                @endphp
-                @if($pendingCount > 0)
-                    <span class="ml-auto bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $pendingCount }}</span>
-                @endif
-            </a>
+                <div id="user-submenu" class="overflow-hidden transition-all duration-300 ease-in-out ml-5 pl-5 border-l border-slate-800/80 space-y-1" 
+                     style="{{ $isUserActive ? 'max-height: 200px; opacity: 1;' : 'max-height: 0px; opacity: 0;' }}">
+                    
+                    <a href="{{ route('admin.users.index') }}" 
+                       class="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-medium transition-all {{ request()->routeIs('admin.users.index') || request()->routeIs('admin.users.create') || request()->routeIs('admin.users.edit') ? 'text-emerald-400 font-bold' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-800/30' }}">
+                        <i class="fas fa-users text-[10px] w-4 text-center opacity-70"></i>
+                        <span>Daftar User</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.users.approval') }}" 
+                       class="flex items-center justify-between px-3 py-2 rounded-lg text-[13px] font-medium transition-all {{ request()->routeIs('admin.users.approval') ? 'text-emerald-400 font-bold' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-800/30' }}">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-user-check text-[10px] w-4 text-center opacity-70"></i>
+                            <span>Approval User</span>
+                        </div>
+                        @if($pendingCount > 0)
+                            <span class="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">{{ $pendingCount }}</span>
+                        @endif
+                    </a>
+                </div>
+            </div>
+
+            <script>
+                function toggleUserDropdown() {
+                    const submenu = document.getElementById('user-submenu');
+                    const chevron = document.getElementById('user-chevron');
+                    
+                    if (submenu.style.maxHeight === '0px' || submenu.style.maxHeight === '') {
+                        submenu.style.maxHeight = '200px';
+                        submenu.style.opacity = '1';
+                        chevron.classList.add('rotate-180');
+                    } else {
+                        submenu.style.maxHeight = '0px';
+                        submenu.style.opacity = '0';
+                        chevron.classList.remove('rotate-180');
+                    }
+                }
+            </script>
 
         @else
             <div class="mt-4">

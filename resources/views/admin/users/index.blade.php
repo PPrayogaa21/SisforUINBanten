@@ -16,12 +16,23 @@
         <div class="relative flex-1">
             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau Username/NIP user..." 
-                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 text-slate-700 bg-slate-50">
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 text-slate-700 bg-white">
         </div>
+        <select name="role" class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 text-slate-600 bg-white">
+            <option value="">Semua Role</option>
+            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+            <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
+        </select>
+        <select name="account_status" class="px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400/50 text-slate-600 bg-white">
+            <option value="">Semua Status</option>
+            <option value="pending" {{ request('account_status') == 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="approved" {{ request('account_status') == 'approved' ? 'selected' : '' }}>Approved</option>
+            <option value="rejected" {{ request('account_status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+        </select>
         <button type="submit" class="px-5 py-2.5 rounded-xl bg-slate-800 text-white text-sm font-medium hover:bg-slate-900 transition-colors whitespace-nowrap">
-            <i class="fas fa-search mr-2"></i> Cari
+            <i class="fas fa-search mr-2"></i> Filter
         </button>
-        @if(request('search'))
+        @if(request('search') || request('role') || request('account_status'))
         <a href="{{ route('admin.users.index') }}" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50 transition-colors whitespace-nowrap">
             <i class="fas fa-undo mr-2"></i> Reset
         </a>
@@ -96,25 +107,27 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            <div class="flex items-center justify-end gap-2 flex-wrap">
+                            <div class="flex items-center justify-end gap-3">
                                 @if($user->account_status === 'pending')
-                                <a href="{{ route('admin.users.approval') }}" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 transition-all text-xs font-semibold border border-amber-100" title="Menunggu Approval">
-                                    <i class="fas fa-clock"></i> Review
+                                <a href="{{ route('admin.users.approval') }}" 
+                                   class="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-all border border-amber-100" 
+                                   title="Review Pendaftaran">
+                                    <i class="fas fa-clock text-xs"></i>
                                 </a>
                                 @endif
                                 <a href="{{ route('admin.users.edit', $user) }}" 
-                                   class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 transition-all text-xs font-semibold border border-amber-100" 
+                                   class="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-slate-50 text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 transition-all border border-slate-100 hover:border-emerald-100" 
                                    title="Edit User">
-                                    <i class="fas fa-edit text-xs"></i> Edit
+                                    <i class="fas fa-pencil text-xs"></i>
                                 </a>
                                 @if(auth()->id() !== $user->id)
                                 <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block form-delete">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
-                                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 transition-all text-xs font-semibold border border-red-100" 
+                                            class="w-8 h-8 inline-flex items-center justify-center rounded-lg bg-slate-50 text-slate-500 hover:bg-red-50 hover:text-red-600 transition-all border border-slate-100 hover:border-red-100" 
                                             title="Hapus User">
-                                        <i class="fas fa-trash text-xs"></i> Hapus
+                                        <i class="fas fa-trash text-xs"></i>
                                     </button>
                                 </form>
                                 @endif

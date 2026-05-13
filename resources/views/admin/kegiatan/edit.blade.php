@@ -59,7 +59,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1.5">Tempat *</label>
-                <input type="text" name="tempat" value="{{ old('tempat', $kegiatan->tempat) }}" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 text-sm">
+                <input type="text" name="tempat" id="tempat" value="{{ old('tempat', $kegiatan->tempat) }}" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 text-sm">
             </div>
 
             <div class="grid sm:grid-cols-2 gap-4">
@@ -70,8 +70,11 @@
                 <div class="flex flex-col gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1.5">Link Google Maps</label>
-                        <input type="url" name="link_maps" value="{{ old('link_maps', $kegiatan->link_maps) }}" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 text-sm" placeholder="https://maps.app.goo.gl/...">
-                        <p class="text-xs text-slate-500 mt-1">Tempelkan link dari fitur Share di Google Maps.</p>
+                        <input type="url" name="link_maps" id="link_maps" value="{{ old('link_maps', $kegiatan->link_maps) }}" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 text-sm" placeholder="https://maps.app.goo.gl/...">
+                        <div class="flex justify-between items-center mt-1">
+                            <p class="text-[10px] text-slate-500">Tempelkan link dari fitur Share di Google Maps.</p>
+                            <p id="maps-status" class="text-[10px] font-bold hidden"></p>
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -97,4 +100,84 @@
         </div>
     </form>
 </div>
+@push('scripts')
+<script>
+    const mapsInput = document.getElementById('link_maps');
+    const statusEl = document.getElementById('maps-status');
+    const latInput = document.getElementById('latitude');
+    const lngInput = document.getElementById('longitude');
+    const tempatInput = document.getElementById('tempat');
+    const alamatInput = document.getElementById('alamat_lengkap');
+
+    function setStatus(text, colorClass) {
+        statusEl.innerText = text;
+        statusEl.className = `text-[10px] font-bold ${colorClass}`;
+        statusEl.classList.remove('hidden');
+    }
+
+    function hideStatus() {
+        statusEl.classList.add('hidden');
+    }
+
+    mapsInput.addEventListener('input', function(e) {
+        const url = e.target.value.trim();
+        if (!url) { hideStatus(); return; }
+
+        // 1. Client-side extraction for instant feedback (Long URL format)
+        const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (match) {
+            latInput.value = match[1];
+            lngInput.value = match[2];
+            setStatus('✅ Koordinat terdeteksi!', 'text-emerald-600');
+        }
+
+        // 2. Trigger server extraction for all Google Maps links to fetch Place/Address
+        if (url.includes('google.com/maps') || url.includes('maps.app.goo.gl') || url.includes('goo.gl/maps')) {
+            setStatus('🔍 Mendeteksi data...', 'text-blue-600');
+            
+            fetch('{{ route("admin.kegiatan.extract-maps") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ url: url })
+            })
+            .then(res => res.json())
+            .then(data => {
+                let hasData = false;
+
+                if (data.lat && data.lng) {
+                    latInput.value = data.lat;
+                    lngInput.value = data.lng;
+                    hasData = true;
+                }
+                // Fill Address automatically and overwrite previous
+                if (data.alamat) {
+                    alamatInput.value = data.alamat;
+                    hasData = true;
+                }
+
+                if (hasData) {
+                    setStatus('✅ Data berhasil dideteksi!', 'text-emerald-600');
+                    
+                    // Visual bounce highlight
+                    [latInput, lngInput, alamatInput].forEach(el => {
+                        if (!el) return;
+                        el.classList.add('bg-emerald-50', 'ring-2', 'ring-emerald-200');
+                        setTimeout(() => el.classList.remove('bg-emerald-50', 'ring-2', 'ring-emerald-200'), 1500);
+                    });
+                } else {
+                     setStatus('⚠️ Data tidak ditemukan', 'text-amber-500');
+                }
+            })
+            .catch(() => {
+                setStatus('⚠️ Gangguan koneksi', 'text-red-500');
+            });
+        }
+    });
+</script>
+@endpush
+
 @endsection

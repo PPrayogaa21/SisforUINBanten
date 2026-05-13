@@ -11,16 +11,21 @@ class CheckBiodata
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check() && !auth()->user()->biodata_verified) {
-            $allowedRoutes = [
-                'biodata.create', 'biodata.store',
-                'logout',
-                'dashboard', 'peserta.dashboard', 'narasumber.dashboard',
-                'kegiatan.join'
+            $protectedRoutes = [
+                'peserta.kegiatan.show',
+                'peserta.kegiatan.absen',
+                'peserta.kuesioner.fill',
+                'peserta.kuesioner.submit',
+                'narasumber.kegiatan.show',
+                'narasumber.kegiatan.materi.upload',
             ];
 
-            if (!$request->routeIs($allowedRoutes) && !$request->is('biodata*')) {
-                return redirect()->route('biodata.create')
-                    ->with('warning', 'Silakan lengkapi biodata Anda terlebih dahulu.');
+            if ($request->routeIs($protectedRoutes)) {
+                // Determine where to redirect back to
+                $fallback = auth()->user()->role === 'narasumber' ? 'narasumber.kegiatan.index' : 'peserta.kegiatan.index';
+                
+                return redirect()->route($fallback)
+                    ->with('show_biodata_modal', true);
             }
         }
 

@@ -7,7 +7,10 @@
     @forelse($kegiatan as $item)
         @php $isSelesai = $item->status === 'completed'; @endphp
         <{{ $isSelesai ? 'div' : 'a' }} 
-            @if(!$isSelesai) href="{{ route('narasumber.kegiatan.show', $item) }}" @endif
+            @if(!$isSelesai) 
+                href="{{ route('narasumber.kegiatan.show', $item) }}" 
+                @if(!auth()->user()->biodata_verified) onclick="event.preventDefault(); openBiodataModal();" @endif
+            @endif
             class="block p-5 rounded-2xl bg-white border border-slate-200/50 shadow-sm {{ $isSelesai ? 'opacity-75 cursor-not-allowed' : 'hover:shadow-md hover:border-amber-200 transition-all' }}">
             <div class="flex items-start justify-between gap-4">
                 <div class="flex-1">

@@ -108,6 +108,9 @@ class KegiatanController extends Controller
     public function peserta(Request $request, Kegiatan $kegiatan)
     {
         $query = User::with('biodata')->where('role', 'user');
+        
+        $kegiatan->load('peserta.biodata');
+        $pesertaList = $kegiatan->peserta;
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -117,11 +120,18 @@ class KegiatanController extends Controller
                        ->orWhere('nip', 'ilike', "%{$search}%");
                 })->orWhere('username', 'ilike', "%{$search}%");
             });
+
+            $searchLower = strtolower($search);
+            $pesertaList = $pesertaList->filter(function($p) use ($searchLower) {
+                $nama = strtolower($p->biodata->nama_lengkap ?? $p->username ?? '');
+                $nip = strtolower($p->biodata->nip ?? '');
+                return str_contains($nama, $searchLower) || str_contains($nip, $searchLower);
+            });
         }
 
         $users = $query->get();
 
-        return view('admin.kegiatan.peserta', compact('kegiatan','users'));
+        return view('admin.kegiatan.peserta', compact('kegiatan','users', 'pesertaList'));
     }
 
     public function addPeserta(Request $request, Kegiatan $kegiatan)
@@ -136,7 +146,7 @@ class KegiatanController extends Controller
 
         $kegiatan->peserta()->syncWithoutDetaching([
             $request->user_id => [
-                'status_kehadiran' => 'tidak_hadir'
+                'status_kehadiran' => 'registered'
             ]
         ]);
         
@@ -181,13 +191,13 @@ class KegiatanController extends Controller
                 'peserta_ids' => 'required|array',
                 'peserta_ids.*' => 'exists:users,id'
             ]);
-            $peserta = User::whereIn('id', $request->peserta_ids)->with('biodata')->get();
+            $peserta = $kegiatan->peserta()->whereIn('users.id', $request->peserta_ids)->with('biodata')->wherePivot('status_kehadiran', 'hadir')->get();
         } else {
-            $peserta = $kegiatan->peserta()->with('biodata')->get();
+            $peserta = $kegiatan->peserta()->with('biodata')->wherePivot('status_kehadiran', 'hadir')->get();
         }
 
         if ($peserta->isEmpty()) {
-            return back()->with('warning', 'Tidak ada peserta untuk dicetak.');
+            return back()->with('warning', 'Tidak ada peserta yang hadir untuk dicetak.');
         }
 
         $printDate = \Carbon\Carbon::now();
@@ -206,6 +216,9 @@ class KegiatanController extends Controller
     {
         $query = User::with('biodata')->where('role', 'user');
 
+        $kegiatan->load('narasumber.biodata');
+        $narasumberList = $kegiatan->narasumber;
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -214,12 +227,18 @@ class KegiatanController extends Controller
                        ->orWhere('nip', 'ilike', "%{$search}%");
                 })->orWhere('username', 'ilike', "%{$search}%");
             });
+
+            $searchLower = strtolower($search);
+            $narasumberList = $narasumberList->filter(function($n) use ($searchLower) {
+                $nama = strtolower($n->biodata->nama_lengkap ?? $n->username ?? '');
+                $nip = strtolower($n->biodata->nip ?? '');
+                return str_contains($nama, $searchLower) || str_contains($nip, $searchLower);
+            });
         }
 
         $users = $query->get();
-        $assigned = $kegiatan->narasumber;
 
-        return view('admin.kegiatan.narasumber', compact('kegiatan','users','assigned'));
+        return view('admin.kegiatan.narasumber', compact('kegiatan','users','narasumberList'));
     }
 
     public function addNarasumber(Request $request, Kegiatan $kegiatan)
@@ -418,5 +437,97 @@ class KegiatanController extends Controller
         }
 
         return Storage::disk('public')->download($dokumen->file_path, $dokumen->judul . '.' . pathinfo($dokumen->file_path, PATHINFO_EXTENSION));
+    }
+
+    public function extractMaps(Request $request)
+    {
+        $request->validate(['url' => 'required|url']);
+        $url = $request->url;
+
+        $lat = null; $lng = null; $alamat = null;
+
+        // -- STAGE 1: GET REDIRECT URL FOR COORDINATES --
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_NOBODY => true // fast HEAD request just to get final URL
+        ]);
+        curl_exec($ch);
+        $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        curl_close($ch);
+
+        // Extract Coords from path
+        if (preg_match('/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/', $finalUrl, $m)) {
+            $lat = $m[1]; $lng = $m[2];
+        } elseif (preg_match('/@(-?\d+\.\d+),(-?\d+\.\d+)/', $finalUrl, $m)) {
+            $lat = $m[1]; $lng = $m[2];
+        }
+
+        // -- STAGE 2: GET METADATA FOR ADDRESS --
+        // Using Twitterbot ensures Google serves a small static page with Place & Address combined in meta tags
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_USERAGENT => 'Twitterbot/1.0', 
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT => 10,
+        ]);
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        // Scrape Address from og:title
+        // We use a robust approach to find the content attribute within the correct meta tag
+        preg_match_all('/<meta\s+([^>]+)>/i', $response, $metas);
+        $rawTitle = null;
+        
+        foreach ($metas[1] as $attrs) {
+            if (stripos($attrs, 'property="og:title"') !== false || stripos($attrs, 'itemprop="name"') !== false) {
+                if (preg_match('/content="([^"]+)"/i', $attrs, $c)) {
+                    $rawTitle = html_entity_decode($c[1]);
+                    break;
+                }
+            }
+        }
+
+        if ($rawTitle && str_contains($rawTitle, ' · ')) {
+            $parts = explode(' · ', $rawTitle);
+            // Address is usually the part containing 'Jl.' or just the rest
+            array_shift($parts); // drop the Place Name
+            $alamat = implode(' · ', $parts);
+            
+            // Clean up Google Plus Codes (e.g., "R5C3+2QX, ") from start of address if present
+            $alamat = preg_replace('/^[A-Z0-9]{4}\+[A-Z0-9]{2,3},\s*/i', '', $alamat);
+        }
+
+        // Fallback if address still empty
+        if (!$alamat) {
+             foreach ($metas[1] as $attrs) {
+                 if (stripos($attrs, 'property="og:description"') !== false) {
+                     if (preg_match('/content="([^"]+)"/i', $attrs, $c)) {
+                         $rawDesc = html_entity_decode($c[1]);
+                         if (!str_contains($rawDesc, '★')) {
+                              $alamat = $rawDesc;
+                         }
+                         break;
+                     }
+                 }
+             }
+        }
+
+        // Sanitizing
+        if ($alamat && str_contains(strtolower($alamat), 'lihat peta')) $alamat = null;
+        if ($alamat && str_contains(strtolower($alamat), 'mencari bisnis lokal')) $alamat = null;
+
+        return response()->json([
+            'lat' => $lat,
+            'lng' => $lng,
+            'alamat' => $alamat ? trim($alamat) : null
+        ]);
     }
 }

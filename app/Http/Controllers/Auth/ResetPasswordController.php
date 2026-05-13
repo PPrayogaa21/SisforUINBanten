@@ -22,8 +22,23 @@ class ResetPasswordController extends Controller
             'password' => 'required|min:8|confirmed',
         ]);
 
+        // Find user via relation
+        $user = \App\Models\User::whereHas('biodata', function($q) use ($request) {
+            $q->where('email', $request->email);
+        })->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => __('passwords.user')]);
+        }
+
+        // Pass username instead of email to fulfill the query contract
         $status = \Illuminate\Support\Facades\Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+            [
+                'username' => $user->username,
+                'token' => $request->token,
+                'password' => $request->password,
+                'password_confirmation' => $request->password_confirmation
+            ],
             function ($user, $password) {
                 $user->forceFill([
                     'password' => \Illuminate\Support\Facades\Hash::make($password)

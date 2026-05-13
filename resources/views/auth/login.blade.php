@@ -42,13 +42,18 @@
         </div>
     </div>
 
-    {{-- Remember --}}
-    <div style="display:flex;align-items:center;gap:10px;">
-        <input type="checkbox" name="remember" id="remember-me"
-               style="width:16px;height:16px;border-radius:5px;border:1.5px solid #cbd5e1;cursor:pointer;accent-color:#10b981;">
-        <label for="remember-me" style="font-size:13px;color:#64748b;cursor:pointer;user-select:none;">
-            Ingat saya
-        </label>
+    {{-- Remember & Forgot --}}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <input type="checkbox" name="remember" id="remember-me"
+                   style="width:16px;height:16px;border-radius:5px;border:1.5px solid #cbd5e1;cursor:pointer;accent-color:#10b981;">
+            <label for="remember-me" style="font-size:13px;color:#64748b;cursor:pointer;user-select:none;">
+                Ingat saya
+            </label>
+        </div>
+        <a href="{{ route('password.request') }}" style="font-size:13px;font-weight:600;color:#059669;text-decoration:none;transition:color .15s;" onmouseover="this.style.color='#047857'" onmouseout="this.style.color='#059669'">
+            Lupa Password?
+        </a>
     </div>
 
     {{-- Submit --}}

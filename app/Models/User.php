@@ -90,4 +90,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(KuesionerResponse::class);
     }
+
+    /**
+     * Override default behavior for Password Resets
+     */
+    public function getEmailForPasswordReset()
+    {
+        return $this->biodata?->email;
+    }
+
+    public function routeNotificationForMail($notification = null)
+    {
+        return $this->biodata?->email;
+    }
 }

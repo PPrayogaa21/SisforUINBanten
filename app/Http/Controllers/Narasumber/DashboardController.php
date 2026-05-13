@@ -9,6 +9,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = auth()->user();
+        session(['active_role' => 'narasumber']);
     
         $kegiatanDiisi = $user->kegiatanSebagaiNarasumber()
             ->orderBy('waktu_mulai', 'desc')

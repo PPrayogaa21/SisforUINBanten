@@ -87,6 +87,8 @@
             });
         }, 5000);
     </script>
+    <!-- Biodata Reminder Modal -->
+    @include('components.biodata-modal')
     @stack('scripts')
 </body>
 </html>

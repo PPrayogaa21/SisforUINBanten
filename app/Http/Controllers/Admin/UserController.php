@@ -24,6 +24,14 @@ class UserController extends Controller
             });
         }
 
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        if ($request->filled('account_status')) {
+            $query->where('account_status', $request->account_status);
+        }
+
         $users = $query->paginate(10)->withQueryString();
         return view('admin.users.index', compact('users'));
     }

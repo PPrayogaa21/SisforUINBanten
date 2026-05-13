@@ -37,9 +37,9 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Sidebar: Form Tambah -->
-        <div class="lg:col-span-1 space-y-6">
-            <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden sticky top-6">
-                <div class="p-6 bg-gradient-to-br from-amber-500 to-orange-600 text-white">
+        <div class="lg:col-span-1 space-y-6" style="overflow: visible !important;">
+            <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm sticky top-6" style="overflow: visible !important; z-index: 40;">
+                <div class="p-6 bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-t-[23px]">
                     <h3 class="font-bold flex items-center gap-2">
                         <i class="fas fa-user-plus"></i> Tambah Narasumber
                     </h3>
@@ -50,20 +50,34 @@
                     <form method="POST" action="{{ route('admin.kegiatan.narasumber.add', $kegiatan) }}" class="space-y-5">
                         @csrf
                         <div>
-                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Cari & Pilih User</label>
-                            <div class="space-y-3">
-                                <div class="relative">
-                                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                                    <input type="text" id="searchUser" placeholder="Ketik nama / NIP..." 
-                                        class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-slate-50 transition-all">
+                            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Cari User</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-slate-400 text-sm"></i>
                                 </div>
-                                <select name="user_id" id="userSelect" required 
-                                    class="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all appearance-none bg-white">
-                                    <option value="">-- Pilih Narasumber --</option>
+                                <input type="text" id="customSearchInput" placeholder="Ketik nama / NIP..." autocomplete="off" style="padding-left: 45px !important; height: 46px;"
+                                    class="w-full pr-4 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-slate-50 shadow-sm transition-all placeholder:text-slate-400">
+                                <input type="hidden" name="user_id" id="hiddenUserId" required>
+                                
+                                <ul id="customDropdown" style="z-index: 9999 !important; max-height: 220px !important;" class="absolute w-full mt-2 bg-white border border-slate-200/70 rounded-2xl shadow-2xl overflow-y-auto hidden divide-y divide-slate-100 backdrop-blur-xl">
                                     @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->biodata->nama_lengkap ?? $user->username }} ({{ $user->biodata->nip ?? '-' }})</option>
+                                    <li class="custom-option px-4 py-3 hover:bg-amber-50/80 cursor-pointer transition-all flex items-center gap-3 group" 
+                                        data-id="{{ $user->id }}" 
+                                        data-text="{{ strtolower(($user->biodata->nama_lengkap ?? $user->username) . ' ' . ($user->biodata->nip ?? '')) }}">
+                                        <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0 pointer-events-none group-hover:scale-110 transition-transform">
+                                            {{ strtoupper(substr($user->biodata->nama_lengkap ?? $user->username ?? 'U', 0, 1)) }}
+                                        </div>
+                                        <div class="pointer-events-none flex-1 min-w-0">
+                                            <p class="text-sm font-bold text-slate-800 group-hover:text-amber-700 transition-colors truncate">{{ $user->biodata->nama_lengkap ?? $user->username }}</p>
+                                            <p class="text-[10px] font-bold tracking-wider text-slate-500 uppercase">NIP: {{ $user->biodata->nip ?? '-' }}</p>
+                                        </div>
+                                    </li>
                                     @endforeach
-                                </select>
+                                    <li id="noResult" class="px-4 py-6 text-center text-slate-500 hidden flex flex-col items-center gap-1">
+                                        <i class="fas fa-user-slash text-xl text-slate-300"></i>
+                                        <span class="text-xs font-bold uppercase tracking-wider">Tidak ditemukan</span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
 
@@ -82,7 +96,28 @@
         </div>
 
         <!-- Main: Table Daftar -->
-        <div class="lg:col-span-2">
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Search & Filter Bar -->
+            <div class="flex items-center justify-between gap-4">
+                <form method="GET" action="{{ route('admin.kegiatan.narasumber', $kegiatan) }}" class="relative w-full md:w-[450px]">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-slate-400 text-sm"></i>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, NIP, atau username..." style="padding-left: 45px !important; height: 46px;"
+                        class="w-full pr-[100px] rounded-2xl border border-slate-200/80 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 bg-white shadow-sm transition-all placeholder:text-slate-400">
+                    
+                    @if(request('search'))
+                    <a href="{{ route('admin.kegiatan.narasumber', $kegiatan) }}" class="absolute right-[85px] inset-y-0 flex items-center text-slate-300 hover:text-slate-500 px-2 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </a>
+                    @endif
+                    
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 h-[34px] flex items-center px-5 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-sm">
+                        Cari
+                    </button>
+                </form>
+            </div>
+
             <div class="bg-white rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden">
                 <form method="POST" action="{{ route('admin.kegiatan.narasumber.cetak-pdf', $kegiatan) }}" id="formCetakPdf" target="_blank">
                     @csrf
@@ -110,7 +145,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
-                                @forelse($kegiatan->narasumber as $n)
+                                @forelse($narasumberList as $n)
                                 <tr class="hover:bg-slate-50/30 transition-colors group">
                                     <td class="px-6 py-4 text-center">
                                         <input type="checkbox" name="narasumber_ids[]" value="{{ $n->id }}" class="narasumber-checkbox rounded-md border-slate-300 text-amber-500 focus:ring-amber-500 w-4 h-4">
@@ -170,37 +205,58 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('searchUser');
-        const userSelect = document.getElementById('userSelect');
+        const searchInput = document.getElementById('customSearchInput');
+        const hiddenInput = document.getElementById('hiddenUserId');
+        const dropdown = document.getElementById('customDropdown');
+        const options = document.querySelectorAll('.custom-option');
+        const noResult = document.getElementById('noResult');
+        
         const selectAllNarasumber = document.getElementById('selectAllNarasumber');
         const narasumberCheckboxes = document.querySelectorAll('.narasumber-checkbox');
         const btnCetakPdf = document.getElementById('btnCetakPdf');
         
-        if (searchInput && userSelect) {
+        if (searchInput && dropdown) {
+            // Show dropdown on focus
+            searchInput.addEventListener('focus', () => {
+                dropdown.classList.remove('hidden');
+                // Scroll to top when opened
+                dropdown.scrollTop = 0;
+            });
+
+            // Hide dropdown on blur with delay to allow clicking
+            searchInput.addEventListener('blur', () => {
+                setTimeout(() => dropdown.classList.add('hidden'), 200);
+            });
+
+            // Filter options
             searchInput.addEventListener('input', function(e) {
                 const term = e.target.value.toLowerCase();
+                let hasVisible = false;
                 
-                Array.from(userSelect.options).forEach(option => {
-                    if(option.value === '') return; // Skip placeholder
-                    
-                    const text = option.text.toLowerCase();
-                    if(text.includes(term)) {
-                        option.style.display = '';
-                        option.hidden = false;
+                options.forEach(opt => {
+                    if (opt.dataset.text.includes(term)) {
+                        opt.style.display = '';
+                        hasVisible = true;
                     } else {
-                        option.style.display = 'none';
-                        option.hidden = true;
+                        opt.style.display = 'none';
                     }
                 });
                 
-                if(userSelect.selectedOptions[0]?.hidden) {
-                    const firstVisible = Array.from(userSelect.options).find(o => !o.hidden && o.value !== '');
-                    if(firstVisible) {
-                        userSelect.value = firstVisible.value;
-                    } else {
-                        userSelect.value = '';
-                    }
+                if (hasVisible) {
+                    noResult.classList.add('hidden');
+                } else {
+                    noResult.classList.remove('hidden');
                 }
+            });
+
+            // Handle selection
+            options.forEach(opt => {
+                opt.addEventListener('click', function() {
+                    const name = this.querySelector('p.font-bold').innerText;
+                    searchInput.value = name;
+                    hiddenInput.value = this.dataset.id;
+                    dropdown.classList.add('hidden');
+                });
             });
         }
 

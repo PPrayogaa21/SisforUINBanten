@@ -14,6 +14,45 @@
         </a>
     </div>
 
+    <!-- RESPONDENTS LIST CARD -->
+    @if($kuesioner->responses->isNotEmpty())
+    <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
+        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-users text-emerald-500"></i> Daftar Responden
+        </h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-slate-500">
+                <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                    <tr>
+                        <th class="px-4 py-3 font-bold">Responden</th>
+                        <th class="px-4 py-3 font-bold">Tanggal Isi</th>
+                        <th class="px-4 py-3 font-bold text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @foreach($kuesioner->responses as $res)
+                    <tr class="hover:bg-slate-50/50 transition-all">
+                        <td class="px-4 py-3 text-slate-800 font-semibold">
+                            {{ $res->user->biodata->nama_lengkap ?? $res->user->username }}
+                        </td>
+                        <td class="px-4 py-3 text-xs text-slate-500">
+                            {{ $res->created_at->translatedFormat('d F Y, H:i') }}
+                        </td>
+                        <td class="px-4 py-3 text-right">
+                            <a href="{{ route('admin.kuesioner.response.cetak-pdf', $res) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-950 text-white font-bold text-xs rounded-lg shadow-sm transition-colors">
+                                <i class="fas fa-print"></i> Cetak PDF
+                            </a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
+    <h3 class="font-bold text-slate-800 text-base border-b border-slate-100 pb-2 mt-8"><i class="fas fa-chart-pie mr-2 text-blue-500"></i>Ringkasan Averages & Jawaban</h3>
+
     @foreach($kuesioner->pertanyaan as $p)
     <div class="p-6 rounded-2xl bg-white border border-slate-200/50 shadow-sm">
         <h3 class="font-medium text-slate-800 mb-3">{{ $p->pertanyaan }}</h3>

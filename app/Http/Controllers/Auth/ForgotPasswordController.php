@@ -16,9 +16,19 @@ class ForgotPasswordController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $status = \Illuminate\Support\Facades\Password::sendResetLink(
-            $request->only('email')
-        );
+        // Find user via biodata relation
+        $user = \App\Models\User::whereHas('biodata', function($q) use ($request) {
+            $q->where('email', $request->email);
+        })->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => __('passwords.user')]);
+        }
+
+        // Use username credential for finding the user record inside the password broker
+        $status = \Illuminate\Support\Facades\Password::sendResetLink([
+            'username' => $user->username
+        ]);
 
         return $status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT
                     ? back()->with(['success' => __($status)])

@@ -66,6 +66,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/users/{user}/reject', [AdminUserController::class, 'reject'])->name('users.reject');
 
     // Kegiatan CRUD
+    Route::post('/kegiatan/extract-maps', [AdminKegiatanController::class, 'extractMaps'])->name('kegiatan.extract-maps');
     Route::resource('kegiatan', AdminKegiatanController::class);
 
     // Kegiatan - Peserta
@@ -104,6 +105,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/kuesioner/{kuesioner}/pertanyaan', [AdminKuesionerController::class, 'addPertanyaan'])->name('kuesioner.pertanyaan.add');
     Route::delete('/pertanyaan/{pertanyaan}', [AdminKuesionerController::class, 'deletePertanyaan'])->name('pertanyaan.delete');
     Route::get('/kuesioner/{kuesioner}/hasil', [AdminKuesionerController::class, 'hasil'])->name('kuesioner.hasil');
+    Route::get('/kuesioner/{kuesioner}/cetak-blanko', [AdminKuesionerController::class, 'cetakBlanko'])->name('kuesioner.cetak-blanko');
+    Route::post('/kuesioner/{kuesioner}/load-template', [AdminKuesionerController::class, 'loadTemplate'])->name('kuesioner.load-template');
+    Route::get('/kuesioner/response/{response}/cetak-pdf', [AdminKuesionerController::class, 'cetakPdfResponse'])->name('kuesioner.response.cetak-pdf');
 });
 
 // ===== PESERTA =====

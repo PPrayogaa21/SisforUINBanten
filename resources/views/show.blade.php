@@ -129,13 +129,25 @@
                 </div>
 
                 @if($kegiatan->alamat_lengkap)
-                <div class="mb-12 p-6 rounded-2xl bg-white/5 border border-white/5">
+                <div class="mb-8 p-6 rounded-2xl bg-white/5 border border-white/5">
                     <h4 class="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
                         <i class="fas fa-map-pin text-emerald-400"></i> Alamat Lengkap
                     </h4>
                     <p class="text-slate-400 text-sm leading-relaxed">
                         {{ $kegiatan->alamat_lengkap }}
                     </p>
+                </div>
+                @endif
+
+                @if($kegiatan->latitude && $kegiatan->longitude)
+                <div class="mb-12 rounded-3xl p-1.5 bg-white/5 border border-white/5 relative overflow-hidden">
+                    <iframe 
+                        class="w-full h-[350px] rounded-2xl shadow-lg opacity-80 hover:opacity-100 transition-opacity border-0"
+                        loading="lazy"
+                        allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q={{ $kegiatan->latitude }},{{ $kegiatan->longitude }}&hl=id&z=16&output=embed">
+                    </iframe>
                 </div>
                 @endif
 
