@@ -21,7 +21,7 @@ class RegisterController extends Controller
             'username' => 'required|string|unique:users,username|min:1',
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:biodata,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:6|confirmed',
         ], [
             'username.unique' => 'Username/NIP sudah terdaftar.',
             'email.unique' => 'Email sudah terdaftar.',

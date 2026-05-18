@@ -27,13 +27,13 @@
 
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1.5">Password Baru <span class="text-red-500">*</span></label>
-                <input type="password" name="password" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all bg-slate-50 focus:bg-white">
+                <input type="password" name="password" required minlength="6" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all bg-slate-50 focus:bg-white">
                 @error('password') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-1.5">Konfirmasi Password Baru <span class="text-red-500">*</span></label>
-                <input type="password" name="password_confirmation" required class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all bg-slate-50 focus:bg-white">
+                <input type="password" name="password_confirmation" required minlength="6" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-sm transition-all bg-slate-50 focus:bg-white">
             </div>
             
             <div class="pt-2 text-xs text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
