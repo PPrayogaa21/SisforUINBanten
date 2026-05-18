@@ -61,7 +61,7 @@
                 <span>Kelola Kegiatan</span>
             </a>
 
-            {{-- Manajemen User Collapsible Dropdown Group --}}
+            {{-- Manajemen Pengguna Collapsible Dropdown Group --}}
             @php
                 $isUserActive = request()->routeIs('admin.users.*');
                 $pendingCount = \App\Models\User::where('account_status', 'pending')->count();
@@ -71,7 +71,7 @@
                 <button type="button" onclick="toggleUserDropdown()" 
                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer group {{ $isUserActive ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-400 hover:bg-slate-800/50 hover:text-white' }}">
                     <i class="fas fa-users-gear w-5 text-center {{ $isUserActive ? 'text-emerald-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
-                    <span>Manajemen User</span>
+                    <span>Manajemen Pengguna</span>
                     
                     <div class="ml-auto flex items-center gap-2">
                         @if($pendingCount > 0 && !$isUserActive)
@@ -87,14 +87,14 @@
                     <a href="{{ route('admin.users.index') }}" 
                        class="flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-medium transition-all {{ request()->routeIs('admin.users.index') || request()->routeIs('admin.users.create') || request()->routeIs('admin.users.edit') ? 'text-emerald-400 font-bold' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-800/30' }}">
                         <i class="fas fa-users text-[10px] w-4 text-center opacity-70"></i>
-                        <span>Daftar User</span>
+                        <span>Daftar Pengguna</span>
                     </a>
                     
                     <a href="{{ route('admin.users.approval') }}" 
                        class="flex items-center justify-between px-3 py-2 rounded-lg text-[13px] font-medium transition-all {{ request()->routeIs('admin.users.approval') ? 'text-emerald-400 font-bold' : 'text-slate-500 hover:text-slate-200 hover:bg-slate-800/30' }}">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-user-check text-[10px] w-4 text-center opacity-70"></i>
-                            <span>Approval User</span>
+                            <span>Verifikasi Pengguna</span>
                         </div>
                         @if($pendingCount > 0)
                             <span class="bg-amber-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">{{ $pendingCount }}</span>

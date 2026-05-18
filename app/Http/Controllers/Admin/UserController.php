@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -52,12 +53,54 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'username' => ['nullable', 'string', 'max:255', 'unique:users'],
+            'username' => [
+                'nullable', 'string', 'max:255',
+                Rule::unique('users', 'username')->where(function ($query) {
+                    return $query->whereIn('account_status', ['approved', 'pending']);
+                })
+            ],
             'nama' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:biodata,email'],
+            'email' => [
+                'required', 'string', 'email', 'max:255',
+                Rule::unique('biodata', 'email')->where(function ($query) {
+                    return $query->whereExists(function ($q) {
+                        $q->select(DB::raw(1))
+                            ->from('users')
+                            ->whereColumn('users.id', 'biodata.user_id')
+                            ->whereIn('account_status', ['approved', 'pending']);
+                    });
+                })
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:admin,user'],
         ]);
+
+        // Cek jika ada user yang di-reject dengan identifier yang sama
+        $existingUser = User::where(function($q) use ($request) {
+            $q->where('username', $request->username)
+              ->orWhereHas('biodata', fn($bq) => $bq->where('email', $request->email));
+        })->where('account_status', 'rejected')->first();
+
+        if ($existingUser) {
+            $existingUser->update([
+                'username' => $request->username,
+                'password' => Hash::make($request->password),
+                'role' => $request->role,
+                'account_status' => 'approved', // Admin creates, so auto approve or keep pending? 
+                // Usually admin created accounts are active.
+                'status' => 1,
+                'hak_akses' => $request->role == 'admin' ? 1 : 2,
+            ]);
+
+            $existingUser->biodata()->update([
+                'nama_lengkap' => $request->nama,
+                'email' => $request->email,
+                'ket' => strtoupper($request->role),
+                'adalah' => $request->role == 'admin' ? 'ADMINISTRATOR' : 'SIMPEG | SISTEM PEGAWAI',
+            ]);
+
+            return redirect()->route('admin.users.edit', $existingUser)->with('success', 'Akun (sebelumnya ditolak) berhasil diaktifkan kembali.');
+        }
 
         $user = User::create([
             'username' => $request->username,
