@@ -42,6 +42,15 @@ class KuesionerController extends Controller
             'jawaban.*' => 'required|string',
         ]);
 
+        $alreadyFilled = KuesionerResponse::where('kuesioner_id', $kuesioner->id)
+            ->where('user_id', $user->id)
+            ->exists();
+
+        if ($alreadyFilled) {
+            return redirect()->route('peserta.kegiatan.show', $kegiatan)
+                ->with('info', 'Anda sudah mengisi kuesioner ini sebelumnya.');
+        }
+
         $response = KuesionerResponse::create([
             'kuesioner_id' => $kuesioner->id,
             'user_id' => $user->id,

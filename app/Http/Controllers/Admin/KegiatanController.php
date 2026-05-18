@@ -96,9 +96,33 @@ class KegiatanController extends Controller
 
     public function destroy(Kegiatan $kegiatan)
     {
+        // Hapus file materi fisik
+        foreach ($kegiatan->materi as $materi) {
+            if (Storage::disk('public')->exists($materi->file_path)) {
+                Storage::disk('public')->delete($materi->file_path);
+            }
+        }
+        
+        // Hapus file dokumentasi fisik
+        foreach ($kegiatan->dokumentasi as $dokumentasi) {
+            if (Storage::disk('public')->exists($dokumentasi->file_path)) {
+                Storage::disk('public')->delete($dokumentasi->file_path);
+            }
+        }
+
+        // Hapus file dokumen fisik
+        foreach ($kegiatan->dokumen as $dokumen) {
+            $otherDocsCount = KegiatanDokumen::where('file_path', $dokumen->file_path)
+                ->where('id', '!=', $dokumen->id)
+                ->count();
+            if ($otherDocsCount === 0 && Storage::disk('public')->exists($dokumen->file_path)) {
+                Storage::disk('public')->delete($dokumen->file_path);
+            }
+        }
+
         $kegiatan->delete();
 
-        return back()->with('success','Kegiatan dihapus');
+        return back()->with('success','Kegiatan beserta seluruh file terkait berhasil dihapus');
     }
 
     /* =======================
@@ -392,7 +416,7 @@ class KegiatanController extends Controller
     public function uploadDokumen(Request $request, Kegiatan $kegiatan)
     {
         $request->validate([
-            'file' => 'required|file|max:2048',
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png|max:20480',
             'judul' => 'required',
             'target_user_id' => 'required|array',
             'target_user_id.*' => 'required|exists:users,id'
@@ -441,7 +465,13 @@ class KegiatanController extends Controller
 
     public function extractMaps(Request $request)
     {
-        $request->validate(['url' => 'required|url']);
+        $request->validate([
+            'url' => ['required', 'url', function ($attribute, $value, $fail) {
+                if (!preg_match('/^(https?:\/\/)?(www\.)?(google\.com\/maps|maps\.app\.goo\.gl|maps\.google\.com)/i', $value)) {
+                    $fail('URL harus merupakan tautan Google Maps yang valid.');
+                }
+            }]
+        ]);
         $url = $request->url;
 
         $lat = null; $lng = null; $alamat = null;

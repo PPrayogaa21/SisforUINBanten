@@ -29,7 +29,7 @@ class ProfileController extends Controller
 
         $request->validate([
             'nama_lengkap'     => 'required|string|max:255',
-            'email'            => 'nullable|email|max:255',
+            'email'            => 'nullable|email|max:255|unique:biodata,email,' . $user->id . ',user_id',
             'tempat_lahir'     => 'nullable|string|max:255',
             'tanggal_lahir'    => 'nullable|date',
             'jabatan'          => 'nullable|string|max:255',
@@ -76,11 +76,11 @@ class ProfileController extends Controller
     {
         $request->validate([
             'current_password' => 'required|current_password',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ], [
             'current_password.current_password' => 'Password saat ini tidak cocok.',
             'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
-            'password.min' => 'Password minimal harus 6 karakter.'
+            'password.min' => 'Password minimal harus 8 karakter.'
         ]);
 
         $user = auth()->user();
