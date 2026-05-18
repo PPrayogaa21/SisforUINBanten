@@ -50,6 +50,12 @@ class KegiatanController extends Controller
     public function downloadMateri($id)
     {
         $materi = \App\Models\KegiatanMateri::findOrFail($id);
+        
+        $user = auth()->user();
+        $isPeserta = $materi->kegiatan->peserta()->where('user_id', $user->id)->exists();
+        if (!$isPeserta && !$user->isAdmin()) {
+            abort(403, 'Anda tidak terdaftar di kegiatan ini.');
+        }
     
         if (!Storage::disk('public')->exists($materi->file_path)) {
             abort(404, 'File materi tidak ditemukan.');
@@ -136,6 +142,12 @@ class KegiatanController extends Controller
     public function downloadDokumentasi($id)
     {
         $dokumentasi = \App\Models\KegiatanDokumentasi::findOrFail($id);
+        
+        $user = auth()->user();
+        $isPeserta = $dokumentasi->kegiatan->peserta()->where('user_id', $user->id)->exists();
+        if (!$isPeserta && !$user->isAdmin()) {
+            abort(403, 'Anda tidak terdaftar di kegiatan ini.');
+        }
     
         if (!Storage::disk('public')->exists($dokumentasi->file_path)) {
             abort(404, 'File foto tidak ditemukan.');

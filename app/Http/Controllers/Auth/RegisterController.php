@@ -27,6 +27,7 @@ class RegisterController extends Controller
                 })
             ],
             'nama' => 'required|string|max:255',
+<<<<<<< HEAD
             'email' => [
                 'required', 'email',
                 Rule::unique('biodata', 'email')->where(function ($query) {
@@ -39,6 +40,10 @@ class RegisterController extends Controller
                 })
             ],
             'password' => 'required|string|min:8|confirmed',
+=======
+            'email' => 'required|email|unique:biodata,email',
+            'password' => 'required|string|min:6|confirmed',
+>>>>>>> f51ef0f7c302e61f463b25b4b08c8d7a2f272453
         ], [
             'username.unique' => 'Username/NIP sudah terdaftar dan aktif.',
             'email.unique' => 'Email sudah terdaftar dan aktif.',

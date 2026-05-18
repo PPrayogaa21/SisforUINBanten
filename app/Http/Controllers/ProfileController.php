@@ -29,7 +29,7 @@ class ProfileController extends Controller
 
         $request->validate([
             'nama_lengkap'     => 'required|string|max:255',
-            'email'            => 'nullable|email|max:255',
+            'email'            => 'nullable|email|max:255|unique:biodata,email,' . $user->id . ',user_id',
             'tempat_lahir'     => 'nullable|string|max:255',
             'tanggal_lahir'    => 'nullable|date',
             'jabatan'          => 'nullable|string|max:255',
